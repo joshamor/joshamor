@@ -11,6 +11,7 @@ const footerGroups = [
     links: [
       ['Make an Appointment', '/contact'],
       ['Our Story', '/our-story'],
+      ['Bespoke', '/bespoke'],
       ['Careers', '/career'],
       ['Sustainability', '/sustainability'],
     ],
