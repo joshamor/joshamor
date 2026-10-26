@@ -182,7 +182,7 @@ export default function Home() {
             loop
             playsInline
             preload="metadata"
-            poster={editorialImages[0]}
+
           >
             <source
               src="/videos/home-hero.mp4"
