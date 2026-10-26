@@ -115,20 +115,12 @@ export default function Header() {
     <header className={`site-header ${
         isContactPage ? 'site-header--overlay' : ''
       }`}>
-      <div className="header-announcement">
-        Tariffs included for U.S. orders
-      </div>
 
       <div
         className="header-main"
         onMouseLeave={scheduleClose}
       >
-        <Link
-          to="/"
-          className="header-logo"
-          aria-label="Home"
-
-        >
+        <Link to="/" className="header-logo max-[900px]:!col-start-1 max-[900px]:!justify-self-start">
          <MyLogo className="w-50" />
         </Link>
 
@@ -205,7 +197,7 @@ export default function Header() {
 
 
 
-        <div className="ml-auto flex items-center gap-[18px] max-[480px]:gap-[13px] translate-x-2">
+        <div className="header-actions max-[900px]:!col-start-3 max-[900px]:!justify-self-end">
           <button
             type="button"
             aria-label="Search products"
@@ -372,6 +364,13 @@ export default function Header() {
           })}
 
           <Link
+            to="/contact"
+            className="mobile-nav-link"
+            onClick={closeMobileMenu}
+          >
+            Make an Appointment
+          </Link>
+          <Link
             to="/collections"
             className="mobile-nav-link"
             onClick={closeMobileMenu}
@@ -417,13 +416,7 @@ export default function Header() {
             </div>
           </div>
 
-          <Link
-            to="/contact"
-            className="mobile-nav-link"
-            onClick={closeMobileMenu}
-          >
-            Make an Appointment
-          </Link>
+
 
 
         </nav>
