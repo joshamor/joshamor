@@ -9,7 +9,7 @@ const footerGroups = [
   {
     title: 'General',
     links: [
-      ['Contact us', '/contact'],
+      ['Make an Appointment', '/contact'],
       ['Our Story', '/our-story'],
       ['Careers', '/career'],
       ['Sustainability', '/sustainability'],

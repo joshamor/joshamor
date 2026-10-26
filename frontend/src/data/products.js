@@ -91,7 +91,7 @@ const products = [
     name: 'Wool Peplum Jacket',
     price: 745000,
     currency: 'NGN',
-    category: 'Jackets',
+    category: 'Casual Wear',
     createdAt: '2026-10-01',
     description:
       'A fitted jacket crafted from a double-faced wool blend with a sculpted silhouette. Designed to contour the body, it features a defined waist, a feminine peplum hem and functional front button fastenings.',
@@ -193,21 +193,21 @@ const products = [
   makePlaceholderProduct({
     id: '003', slug: 'ela-knitted-t-shirt',
     name: 'Ela Knitted T-Shirt', price: 320000,
-    category: 'Knits', createdAt: '2026-10-20',
+    category: 'Casual Wear', createdAt: '2026-10-20',
     colors: ['White', 'Beige', 'Black'], imageIndex: 0,
   }),
 
   makePlaceholderProduct({
     id: '004', slug: 'sculpted-knit-top',
     name: 'Sculpted Knit Top', price: 285000,
-    category: 'Tops', createdAt: '2026-10-18',
+    category: 'Casual Wear', createdAt: '2026-10-18',
     colors: ['Grey', 'Black'], imageIndex: 1,
   }),
 
   makePlaceholderProduct({
     id: '005', slug: 'high-waist-pencil-skirt',
     name: 'High Waist Pencil Skirt', price: 300000,
-    category: 'Skirts', createdAt: '2026-10-15',
+    category: 'Casual Wear', createdAt: '2026-10-15',
     colors: ['Black', 'White'], imageIndex: 2,
     availableSizes: ['XS', 'S', 'M', 'L'],
   }),
@@ -215,7 +215,7 @@ const products = [
   makePlaceholderProduct({
     id: '006', slug: 'tailored-wool-coat',
     name: 'Tailored Wool Coat', price: 890000,
-    category: 'Coats', createdAt: '2026-10-12',
+    category: 'Casual Wear', createdAt: '2026-10-12',
     colors: ['Brown', 'Black', 'Beige'], imageIndex: 0,
     availableSizes: ['S', 'M', 'L', 'XL'],
   }),
@@ -223,7 +223,7 @@ const products = [
   makePlaceholderProduct({
     id: '007', slug: 'relaxed-linen-trousers',
     name: 'Relaxed Linen Trousers', price: 265000,
-    category: 'Trousers', createdAt: '2026-10-10',
+    category: 'Casual Wear', createdAt: '2026-10-10',
     colors: ['Beige', 'White', 'Black'], imageIndex: 1,
     sizes: ['XS', 'S', 'M', 'L', 'XL', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
     availableSizes: ['XS', 'S', 'M', 'L', 'XL', '24', '26', '28', '30'],
@@ -232,14 +232,14 @@ const products = [
   makePlaceholderProduct({
     id: '008', slug: 'oversized-tailored-blazer',
     name: 'Oversized Tailored Blazer', price: 560000,
-    category: 'Blazers', createdAt: '2026-10-08',
+    category: 'Casual Wear', createdAt: '2026-10-08',
     colors: ['Grey', 'Black', 'Beige'], imageIndex: 2,
   }),
 
   makePlaceholderProduct({
     id: '009', slug: 'draped-evening-dress',
     name: 'Draped Evening Dress', price: 480000,
-    category: 'Dresses', createdAt: '2026-10-06',
+    category: 'Casual Wear', createdAt: '2026-10-06',
     colors: ['Black', 'Blue', 'Brown'], imageIndex: 0,
     availableSizes: ['XS', 'S', 'M', 'XL'],
   }),
@@ -247,21 +247,21 @@ const products = [
   makePlaceholderProduct({
     id: '010', slug: 'minimal-midi-dress',
     name: 'Minimal Midi Dress', price: 395000,
-    category: 'Dresses', createdAt: '2026-10-04',
+    category: 'Casual Wear', createdAt: '2026-10-04',
     colors: ['White', 'Beige', 'Black'], imageIndex: 1,
   }),
 
   makePlaceholderProduct({
     id: '011', slug: 'pleated-midi-skirt',
     name: 'Pleated Midi Skirt', price: 275000,
-    category: 'Skirts', createdAt: '2026-09-29',
+    category: 'Casual Wear', createdAt: '2026-09-29',
     colors: ['Beige', 'Grey', 'Black'], imageIndex: 2,
   }),
 
   makePlaceholderProduct({
     id: '012', slug: 'wide-leg-shorts',
     name: 'Wide Leg Shorts', price: 185000,
-    category: 'Shorts', createdAt: '2026-09-22',
+    category: 'Casual Wear', createdAt: '2026-09-22',
     colors: ['White', 'Brown'], imageIndex: 0,
     sizes: ['XS', 'S', 'M', 'L', 'XL', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
     availableSizes: ['XS', 'S', 'M', 'L', '24', '26', '28'],
@@ -270,7 +270,7 @@ const products = [
   makePlaceholderProduct({
     id: '013', slug: 'minimal-swimwear-set',
     name: 'Minimal Swimwear Set', price: 210000,
-    category: 'Swim', createdAt: '2026-09-18',
+    category: 'Casual Wear', createdAt: '2026-09-18',
     colors: ['Black', 'Blue', 'White'], imageIndex: 1,
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     availableSizes: ['XS', 'S', 'M', 'L'],
@@ -288,7 +288,7 @@ const products = [
   makePlaceholderProduct({
     id: '015', slug: 'cropped-knit-cardigan',
     name: 'Cropped Knit Cardigan', price: 340000,
-    category: 'Knits', createdAt: '2026-09-10',
+    category: 'Casual Wear', createdAt: '2026-09-10',
     colors: ['White', 'Blue', 'Grey'], imageIndex: 0,
   }),
 

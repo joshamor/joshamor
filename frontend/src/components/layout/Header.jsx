@@ -35,7 +35,6 @@ const megaMenuSections = {
     links: [
       { label: 'Tailoring', to: '/bespoke/tailoring' },
       { label: 'Groomswear', to: '/bespoke/groomswear' },
-      { label: 'Make an Appointment', to: '/appointments' },
     ],
   },
   house: {
@@ -44,6 +43,12 @@ const megaMenuSections = {
       { label: 'Our Story', to: '/our-story' },
       { label: 'Updates', to: '/updates' },
       { label: 'Contact Us', to: '/contact' },
+    ],
+  },
+  appointment: {
+    label: 'Appointment',
+    links: [
+      { label: 'Make an Appointment', to: '/contact-us' },
     ],
   },
 }
@@ -394,6 +399,7 @@ export default function Header() {
               />
             </button>
 
+
             <div
               className={`mobile-category-list ${
                 mobileShopOpen === 'house' ? 'is-open' : ''
@@ -410,6 +416,16 @@ export default function Header() {
               ))}
             </div>
           </div>
+
+          <Link
+            to="/contact"
+            className="mobile-nav-link"
+            onClick={closeMobileMenu}
+          >
+            Make an Appointment
+          </Link>
+
+
         </nav>
 
 
