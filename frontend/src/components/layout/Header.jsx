@@ -205,7 +205,7 @@ export default function Header() {
 
 
 
-        <div className="header-actions">
+        <div className="ml-auto flex items-center gap-[18px] max-[480px]:gap-[13px] translate-x-2">
           <button
             type="button"
             aria-label="Search products"

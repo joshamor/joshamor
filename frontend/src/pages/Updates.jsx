@@ -111,9 +111,7 @@ export default function Updates() {
                   <span className="updates-card-number">
                     0{index + 1}
                   </span>
-                  <span className="updates-card-arrow" aria-hidden="true">
-                    ↗
-                  </span>
+
                 </div>
 
                 <div className="updates-card-copy">

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Search, X, ArrowUpRight } from 'lucide-react'
 import products from '../../data/products'
 import './search.css'
+import MyLogo from "../../assets/logo.svg?react"
 
 const suggestions = [
   'New arrivals',
@@ -81,7 +82,7 @@ export default function SearchOverlay({ onClose }) {
             className="search-wordmark"
             onClick={onClose}
           >
-            JOSH AMOR
+           <MyLogo className="w-50" />
           </Link>
 
           <button
