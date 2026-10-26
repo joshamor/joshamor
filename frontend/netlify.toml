@@ -1,0 +1,6 @@
+[build]
+  publish = "dist" # or "build" depending on your framework
+  command = "npm install --legacy-peer-deps && npm run build"
+
+[build.environment]
+  NPM_FLAGS = "--legacy-peer-deps"
