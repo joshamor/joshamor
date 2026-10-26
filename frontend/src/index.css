@@ -1,0 +1,32 @@
+
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: "Boogy Brut";
+  src: url("./assets/fonts/boogy-brut-regular.otf") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Flatfox Sans";
+  src: url("./assets/fonts/FlatSans-SemiBold.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: "Boogy Brut", sans-serif;
+  --font-body: "Be Vietnam Pro", sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}

@@ -1,0 +1,16 @@
+.route-transition {
+  width: 100%;
+  min-height: 1px;
+}
+
+/* Keep the animated page wrapper from creating horizontal overflow. */
+html,
+body {
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-transition {
+    scroll-behavior: auto;
+  }
+}

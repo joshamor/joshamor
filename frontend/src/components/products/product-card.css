@@ -1,0 +1,147 @@
+
+.product-card {
+  min-width: 0;
+  font-family: var(--font-body);
+}
+
+.product-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-card-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 0.68;
+  background: #f3f2f0;
+}
+
+.product-card-media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 350ms ease;
+}
+
+.product-card:hover .product-card-media > img {
+  transform: scale(1.015);
+}
+
+.product-card-arrows {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.product-card-arrows button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 80%);
+  color: #171717;
+  cursor: pointer;
+}
+
+.product-card-sizes {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  width: 100%;
+  padding: 14px 12px;
+  background: rgb(255 255 255 / 94%);
+  font-size: 10px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+
+.product-card-sizes.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card-sizes span {
+  min-width: 14px;
+  text-align: center;
+}
+
+.product-card-info {
+  padding-top: 10px;
+}
+
+.product-card-info h3,
+.product-card-info p {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.product-card-info p {
+  margin-top: 2px;
+}
+
+@media (hover: none) {
+  .product-card-sizes,
+  .product-card-arrows {
+    display: none;
+  }
+
+  .product-card:hover .product-card-media > img {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-card-media > img,
+  .product-card-sizes {
+    transition: none;
+  }
+}
+
+
+.product-card-media {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.product-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: product-image-enter 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+
+@keyframes product-image-enter {
+  from {
+    opacity: 0.55;
+    transform: scale(1.015);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-card-image {
+    animation: none;
+    will-change: auto;
+  }
+}

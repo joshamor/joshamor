@@ -1,0 +1,159 @@
+
+.shop-filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  justify-content: flex-end;
+  background: rgb(0 0 0 / 30%);
+}
+
+.shop-filter-drawer {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  height: 100%;
+  background: #fff;
+  color: #080808;
+  font-family: var(--font-body);
+  animation: shop-filter-enter 220ms ease both;
+}
+
+.shop-filter-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 18px;
+  min-height: 54px;
+  padding: 0 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.shop-filter-header button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.shop-filter-back {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.shop-filter-close {
+  margin-left: auto;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.shop-filter-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 14px;
+}
+
+.shop-filter-row,
+.shop-filter-option,
+.shop-filter-color {
+  display: flex;
+  width: 100%;
+  min-height: 59px;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid #e0e2e5;
+  padding: 0 1px;
+  background: #fff;
+  color: #080808;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.shop-filter-row > span:first-child,
+.shop-filter-option > span:first-child {
+  flex: 1;
+}
+
+.shop-filter-current {
+  color: #858585;
+  text-align: right;
+}
+
+.shop-filter-option,
+.shop-filter-color {
+  justify-content: space-between;
+}
+
+.shop-filter-color {
+  justify-content: flex-start;
+  min-height: 65px;
+  gap: 12px;
+}
+
+.shop-filter-color > span:nth-child(2) {
+  flex: 1;
+}
+
+.shop-filter-swatch {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.shop-filter-swatch.is-white {
+  border: 1px solid #e5e5e5;
+}
+
+.shop-filter-check {
+  margin-left: auto;
+}
+
+.shop-filter-reset {
+  margin-top: 22px;
+  border: 0;
+  border-bottom: 1px solid #111;
+  padding: 4px 0;
+  background: transparent;
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.shop-filter-footer {
+  flex-shrink: 0;
+  padding: 14px;
+  background: #fff;
+}
+
+.shop-filter-results {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 4px;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@keyframes shop-filter-enter {
+  from { transform: translateX(30px); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-filter-drawer {
+    animation: none;
+  }
+}
