@@ -68,13 +68,14 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/about-us" element={<About />} />
+          <Route path="/our-story" element={<About />} />
           <Route path="/career" element={<Careers />} />
           <Route path="/sustainability" element={<Sustainability />} />
           <Route path="/enquiry" element={<Enquiry />} />
           <Route path="/shipping" element={<Shipping />} />
           <Route path="/campaigns" element={<CampaignLibrary />} />
           <Route path="/lookbook" element={<Lookbook />} />
+          <Route path="/appointments" element={<Contact />} />
 
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/:categorySlug" element={<Shop />} />

@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Logo from "../../assets/logo.svg?react"
 
 
 
@@ -9,7 +10,7 @@ const footerGroups = [
     title: 'General',
     links: [
       ['Contact us', '/contact'],
-      ['About us', '/about-us'],
+      ['Our Story', '/our-story'],
       ['Careers', '/career'],
       ['Sustainability', '/sustainability'],
     ],
@@ -48,7 +49,7 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <Link to="/" className="footer-logo">
-        JOSH AMOR
+        <Logo className="w-60" />
       </Link>
 
       <div className="footer-content">
@@ -90,10 +91,7 @@ export default function Footer() {
             </label>
           </form>
 
-          <div className="footer-region">
-            <button type="button">English</button>
-            <button type="button">Nigeria</button>
-          </div>
+
         </section>
 
         <div className="footer-link-groups">
@@ -120,7 +118,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-copyright">
-        © 2026 Your Brand
+        © 2026 Josh Amor
       </div>
     </footer>
   );

@@ -6,35 +6,15 @@ export const shopCategories = [
     productCategories: [],
   },
   {
-    label: 'Dresses & skirts',
-    slug: 'dresses-and-skirts',
-    productCategories: ['Dresses', 'Skirts'],
-    subcategories: ['Dresses', 'Skirts'],
+    label: 'New Arrivals',
+    slug: 'new-arrivals',
+    productCategories: ['New Arrivals'],
+    subcategories: [''],
   },
   {
-    label: 'Knits & tops',
-    slug: 'knits-and-tops',
-    productCategories: ['Knits', 'Tops'],
-  },
-  {
-    label: 'Blazers',
-    slug: 'blazers',
-    productCategories: ['Blazers'],
-  },
-  {
-    label: 'Jackets & coats',
-    slug: 'jackets-and-coats',
-    productCategories: ['Jackets', 'Coats'],
-  },
-  {
-    label: 'Trousers & shorts',
-    slug: 'trousers-and-shorts',
-    productCategories: ['Trousers', 'Shorts'],
-  },
-  {
-    label: 'Swim',
-    slug: 'swim',
-    productCategories: ['Swim'],
+    label: 'Casual Wear',
+    slug: 'casual-wear',
+    productCategories: ['Casual Wear'],
   },
   {
     label: 'Accessories',
