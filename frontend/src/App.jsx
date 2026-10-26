@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import {  Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 import Header from './components/layout/Header'
@@ -17,6 +17,13 @@ import Shop from './pages/Shop'
 import ProductDetail from './pages/ProductDetail'
 import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
+import Updates from './pages/Updates'
+
+import Collections from './pages/Collections'
+import Bespoke from './pages/Bespoke'
+import Tailoring from './pages/Tailoring'
+import Groomswear from './pages/Groomswear'
+
 
 import './components/layout/site-chrome.css'
 import './page-transitions.css'
@@ -76,6 +83,13 @@ function AnimatedRoutes() {
           <Route path="/campaigns" element={<CampaignLibrary />} />
           <Route path="/lookbook" element={<Lookbook />} />
           <Route path="/appointments" element={<Contact />} />
+          <Route path="/updates" element={<Updates />} />
+
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/bespoke" element={<Bespoke />} />
+          <Route path="/bespoke/tailoring" element={<Tailoring />} />
+          <Route path="/bespoke/groomswear" element={<Groomswear />} />
+
 
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/:categorySlug" element={<Shop />} />
