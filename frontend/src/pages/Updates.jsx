@@ -145,7 +145,7 @@ export default function Updates() {
         </p>
 
         <Link to="/contact" className="updates-mailing-link">
-          JOIN OUR MAILING LIST <span aria-hidden="true">↗</span>
+          JOIN OUR MAILING LIST
         </Link>
       </section>
     </main>
