@@ -85,7 +85,7 @@ export default async function handler(request) {
 
     // Add the subscriber to the Inner Circle form.
     const formResponse = await fetch(
-      `https://api.kit.com/v4/forms/${encodeURIComponent(formId)}/subscribers`,
+      `https://api.kit.com/v4/forms/${formId}/subscribers`,
       {
         method: 'POST',
         headers,
