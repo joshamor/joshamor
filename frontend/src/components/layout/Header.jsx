@@ -25,6 +25,7 @@ const megaMenuSections = {
   shop: {
     label: 'Shop',
     links: [
+    { label: 'View All', to: '/shop' },
       { label: 'New Arrivals', to: '/shop/new-arrivals' },
       { label: 'Casual Wear', to: '/shop/casual-wear' },
       { label: 'Accessories', to: '/shop/accessories' },

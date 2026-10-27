@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import products from '../data/products'
+import SEO from '../components/SEO'
 import './home.css'
 
 const editorialImages = [
@@ -164,6 +165,11 @@ export default function Home() {
   )
 
   return (
+    <>
+      <SEO
+           title="Contemporary Fashion & Bespoke Tailoring"
+           description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+         />
     <main className="home-page">
       {/* 1. Portrait campaign video */}
       <section className="home-hero">
@@ -262,5 +268,6 @@ export default function Home() {
         label="More campaign imagery"
       />
     </main>
+    </>
   )
 }

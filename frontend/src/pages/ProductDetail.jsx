@@ -6,6 +6,8 @@ import products from '../data/products'
 import ProductCard from '../components/products/ProductCard'
 import { useCart } from '../context/CartContext'
 import './product-detail.css'
+import { Helmet } from 'react-helmet-async'
+import SEO from '../components/SEO'
 
 const formatPrice = (price) =>
   new Intl.NumberFormat('en-NG', {
@@ -248,14 +250,23 @@ export default function ProductDetail() {
     setCartMessage('')
   }, [slug])
 
+
   if (!product) {
     return (
-      <main className="product-not-found">
-        <h1>Product not found</h1>
-        <Link to="/">Return to home</Link>
-      </main>
+      <>
+        <SEO
+          title="Product not found"
+          description="This product could not be found."
+          noindex
+        />
+        <main className="product-not-found">
+          <h1>Product not found</h1>
+          <Link to="/">Return to home</Link>
+        </main>
+      </>
     )
   }
+
 
   const activeColorIndex = colorIndex === -1 ? 0 : colorIndex
   const selectedColor = product.colors[activeColorIndex]
@@ -279,7 +290,54 @@ export default function ProductDetail() {
     product.matchingProducts?.includes(item.id)
   )
 
+  const productDescription = product.description
+    ?.replace(/\s+/g, ' ')
+    .trim()
+
+  const productImage = product.images?.[0]
+
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: productDescription,
+    image: product.images || [],
+    sku: product.id,
+    brand: {
+      '@type': 'Brand',
+      name: 'JOSH AMOR',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: product.currency || 'NGN',
+      price: product.price,
+      availability: product.availableSizes?.length
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+    },
+  }
+
+
   return (
+<>
+
+    <SEO
+      title={product.name}
+      description={productDescription}
+      image={productImage}
+      type="product"
+    />
+
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(productSchema)}
+      </script>
+    </Helmet>
+
+
+
+
     <main className="product-detail-page">
       <div className="product-detail-layout">
         <section className="product-gallery" aria-label="Product images">
@@ -497,6 +555,7 @@ export default function ProductDetail() {
       {sizeGuideOpen && (
         <SizeGuideModal onClose={() => setSizeGuideOpen(false)} />
       )}
-    </main>
+      </main>
+</>
   )
 }

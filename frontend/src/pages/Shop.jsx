@@ -5,11 +5,14 @@ import products from '../data/products'
 import ProductGrid from '../components/products/ProductGrid'
 import ShopFilterDrawer from '../components/products/ShopFilterDrawer'
 import {
-  getShopCategory,
+  getShopCategoryOrDefault,
+  getProductsForCategory,
 } from '../data/shopCategories'
+
 import ShopCategoryNavigation from
   '../components/products/ShopCategoryNavigation'
 import './shop.css'
+import SEO from '../components/SEO'
 
 const INITIAL_FILTERS = {
   sort: 'Standard',
@@ -71,7 +74,16 @@ export default function Shop() {
   const { categorySlug } = useParams()
   const navigate = useNavigate()
 
-  const category = getShopCategory(categorySlug)
+  const category = getShopCategoryOrDefault(categorySlug)
+
+  const categoryTitle =
+    category?.title ||
+    category?.name ||
+    category?.label ||
+    'Shop All'
+
+  const shopTitle = category.seoTitle
+  const shopDescription = category.seoDescription
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [filters, setFilters] = useState(INITIAL_FILTERS)
@@ -79,8 +91,14 @@ export default function Shop() {
 
   // Reset the subcategory when navigating to a different category.
   useEffect(() => {
-    setSubcategory(null)
-  }, [categorySlug])
+    if (
+      categorySlug &&
+      category.slug !== categorySlug
+    ) {
+      navigate('/shop', { replace: true })
+    }
+  }, [categorySlug, category, navigate])
+
 
   // Redirect invalid category URLs instead of displaying all products.
   useEffect(() => {
@@ -93,11 +111,9 @@ export default function Shop() {
     // Don't show all products while an invalid URL is being redirected.
     if (categorySlug && !category) return []
 
-    const categoryProducts = products.filter((product) => {
-      if (!category?.productCategories?.length) return true
 
-      return category.productCategories.includes(product.category)
-    })
+    const categoryProducts = getProductsForCategory(products, category)
+
 
     const subcategoryProducts = categoryProducts.filter((product) => {
       if (!subcategory) return true
@@ -113,6 +129,12 @@ export default function Shop() {
   }, [categorySlug, category, subcategory, filters])
 
   return (
+  <>
+      <SEO
+        title={shopTitle}
+        description={shopDescription}
+      />
+
     <main className="shop-page">
       <ShopCategoryNavigation
         category={category}
@@ -161,6 +183,7 @@ export default function Shop() {
         onApply={setFilters}
         resultCount={visibleProducts.length}
       />
-    </main>
+      </main>
+  </>
   )
 }
