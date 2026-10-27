@@ -1,5 +1,6 @@
 
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import './updates.css'
 
 const images = {
@@ -47,6 +48,166 @@ const updates = [
     link: '/contact',
   },
 ]
+
+
+function InnerCircleSignup() {
+  const [email, setEmail] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [status, setStatus] = useState('idle')
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+
+    if (!consent || !email.trim()) return
+
+    const form = event.currentTarget
+    const website = form.elements.website.value
+
+    setStatus('sending')
+
+    try {
+      const response = await fetch('/.netlify/functions/inner-circle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          consent,
+          website,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Newsletter signup failed')
+      }
+
+      setEmail('')
+      setConsent(false)
+      setStatus('success')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <section
+      id="mailing-list"
+      className="bg-[#f5f4f1] px-5 py-16 text-center md:px-8 md:py-24"
+    >
+      <p className="mb-4 text-[10px] uppercase tracking-[0.2em]">
+        Stay connected
+      </p>
+
+      <h2 className="font-[var(--font-display)] text-3xl md:text-5xl">
+        Stay in the Circle.
+      </h2>
+
+      <p className="mt-5 font-[var(--font-display)] text-lg">
+        The Inner Circle
+      </p>
+
+      <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-neutral-600">
+        Early access, exclusive releases, private invitations, and
+        updates for subscribers.
+      </p>
+
+      <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-neutral-600">
+        Be the first to discover new collections, exclusive releases,
+        upcoming events, and stories from the world of Josh Amor.
+      </p>
+
+      {status === 'success' ? (
+        <div className="mx-auto mt-8 max-w-md text-sm leading-7" role="status">
+          <p>Thank you for joining the Inner Circle.</p>
+          <p className="mt-2 text-neutral-600">
+            If email confirmation is required, please check your inbox.
+          </p>
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto mt-8 w-full max-w-md text-left"
+        >
+          <label
+            htmlFor="inner-circle-email"
+            className="mb-2 block text-xs"
+          >
+            Email address
+          </label>
+
+          <div className="flex items-center border-b border-neutral-800">
+            <input
+              id="inner-circle-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Your email address"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="h-12 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-neutral-500"
+            />
+
+            <button
+              type="submit"
+              disabled={
+                !consent ||
+                !email.trim() ||
+                status === 'sending'
+              }
+              className="py-3 pl-4 text-xs uppercase tracking-wider transition-opacity hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {status === 'sending' ? 'Joining…' : 'Join ↗'}
+            </button>
+          </div>
+
+          <label className="mt-5 flex items-start gap-2 text-xs leading-5 text-neutral-600">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(event) => setConsent(event.target.checked)}
+              required
+              className="mt-1 accent-black"
+            />
+
+            <span>
+              I agree to receive email updates from Josh Amor and
+              acknowledge the{' '}
+              <Link
+                to="/privacy-policy"
+                className="underline underline-offset-2"
+              >
+                Privacy Policy
+              </Link>.
+            </span>
+          </label>
+
+          {/* Honeypot field for basic bot filtering */}
+          <div
+            className="absolute -left-[9999px] h-px w-px overflow-hidden"
+            aria-hidden="true"
+          >
+            <label>
+              Leave this field empty
+              <input
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </label>
+          </div>
+
+          {status === 'error' && (
+            <p className="mt-4 text-sm text-red-700" role="alert">
+              We couldn't process your signup. Please try again.
+            </p>
+          )}
+        </form>
+      )}
+    </section>
+  )
+}
+
 
 export default function Updates() {
   return (
@@ -127,27 +288,7 @@ export default function Updates() {
         </div>
       </section>
 
-      <section className="updates-inner-circle" id="mailing-list">
-        <p className="updates-eyebrow">Stay connected</p>
-
-        <h2>Stay in the Circle.</h2>
-
-        <p className="updates-circle-label">The Inner Circle</p>
-
-        <p className="updates-circle-copy">
-          Early access, exclusive releases, private invitations, and
-          updates for subscribers.
-        </p>
-
-        <p className="updates-circle-copy">
-          Be the first to discover new collections, exclusive releases,
-          upcoming events, and stories from the world of Josh Amor.
-        </p>
-
-        <Link to="/contact" className="updates-mailing-link">
-          JOIN OUR MAILING LIST
-        </Link>
-      </section>
+      <InnerCircleSignup />
     </main>
   )
 }

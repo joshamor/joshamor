@@ -483,3 +483,42 @@
     max-width: 320px;
   }
 }
+
+
+.contact-social-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin: 18px 0 20px;
+}
+
+.contact-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: inherit;
+  font-size: 12px;
+  text-decoration: none;
+  transition: opacity 180ms ease;
+}
+
+.contact-social-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.contact-whatsapp-link svg {
+  color: #25d366;
+}
+
+.contact-social-link:hover {
+  opacity: 0.65;
+}
+
+@media (max-width: 480px) {
+  .contact-social-actions {
+    gap: 14px;
+  }
+}
