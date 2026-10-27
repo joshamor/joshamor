@@ -55,11 +55,10 @@ export default function Footer() {
 
       <div className="footer-content">
         <section className="footer-newsletter">
-          <h2 className="footer-heading">Be a part of JOSH AMOR</h2>
+          <h2 className="footer-heading">ENTER THE WORLD OF JOSH AMOR</h2>
 
           <p className="footer-description">
-            Subscribe to get early access to our collections - and exclusive
-            offers such as future archive sales, only for subscribers.
+            Be the first to discover new collections, receive exclusive invitations, and access private offerings reserved for our subscribers.
           </p>
 
           <form onSubmit={handleSubmit} className="newsletter-form">
