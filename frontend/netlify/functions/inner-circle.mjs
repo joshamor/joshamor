@@ -67,9 +67,21 @@ export default async function handler(request) {
       }
     )
 
+
     if (!subscriberResponse.ok) {
-      throw new Error('Kit subscriber request failed')
+      const details = await subscriberResponse.text()
+
+      console.error('Kit subscriber request failed', {
+        status: subscriberResponse.status,
+        details: details.slice(0, 1000),
+      })
+
+      return Response.json(
+        { message: 'Subscriber creation failed.' },
+        { status: 502 }
+      )
     }
+
 
     // Add the subscriber to the Inner Circle form.
     const formResponse = await fetch(
@@ -81,9 +93,21 @@ export default async function handler(request) {
       }
     )
 
+
     if (!formResponse.ok) {
-      throw new Error('Kit form subscription failed')
+      const details = await formResponse.text()
+
+      console.error('Kit form subscription failed', {
+        status: formResponse.status,
+        details: details.slice(0, 1000),
+      })
+
+      return Response.json(
+        { message: 'Form subscription failed.' },
+        { status: 502 }
+      )
     }
+
 
     return Response.json({ success: true })
   } catch {
