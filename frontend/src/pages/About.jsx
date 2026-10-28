@@ -1,6 +1,7 @@
 
 import './about.css'
 import MyLogo from "../assets/logo.svg?react"
+import SEO from '../components/SEO'
 
 const images = {
   hero: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=2400&q=85',
@@ -10,6 +11,11 @@ const images = {
 
 export default function About() {
   return (
+  <>
+    <SEO
+      title="Our Story"
+      description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+    />
     <main className="about-page">
       <section
         className="about-hero"
@@ -79,6 +85,7 @@ export default function About() {
           understands that true power begins within.
         </p>
       </section>
-    </main>
+      </main>
+  </>
   )
 }

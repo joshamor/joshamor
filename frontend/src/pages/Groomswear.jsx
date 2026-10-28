@@ -1,9 +1,15 @@
 
 import { Link } from 'react-router-dom'
 import './editorial-landing.css'
+import SEO from '../components/SEO'
 
 export default function Groomswear() {
   return (
+  <>
+    <SEO
+      title="Groomswear"
+      description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+    />
     <main className="editorial-landing editorial-service-page">
       <section className="editorial-service-hero">
         <img
@@ -21,6 +27,7 @@ export default function Groomswear() {
           </Link>
         </div>
       </section>
-    </main>
+      </main>
+  </>
   )
 }

@@ -24,32 +24,31 @@ import MyLogo from "../../assets/logo.svg?react"
 const megaMenuSections = {
   shop: {
     label: 'Shop',
+    to: '/shop',
     links: [
-    { label: 'View All', to: '/shop' },
+{ label: 'View All', to: '/shop' },
       { label: 'New Arrivals', to: '/shop/new-arrivals' },
       { label: 'Casual Wear', to: '/shop/casual-wear' },
       { label: 'Accessories', to: '/shop/accessories' },
     ],
   },
+
   bespoke: {
     label: 'Bespoke',
+    to: '/bespoke',
     links: [
       { label: 'Tailoring', to: '/bespoke/tailoring' },
       { label: 'Groomswear', to: '/bespoke/groomswear' },
     ],
   },
+
   house: {
     label: 'The House',
+    to: '/our-story',
     links: [
       { label: 'Our Story', to: '/our-story' },
       { label: 'Updates', to: '/updates' },
       { label: 'Contact Us', to: '/contact' },
-    ],
-  },
-  appointment: {
-    label: 'Appointment',
-    links: [
-      { label: 'Make an Appointment', to: '/contact-us' },
     ],
   },
 }
@@ -330,27 +329,41 @@ export default function Header() {
 
             return (
               <div className="mobile-shop-group" key={key}>
-                <button
-                  type="button"
-                  className="mobile-nav-link mobile-shop-trigger"
-                  aria-expanded={isOpen}
-                  onClick={() =>
-                    setMobileShopOpen(isOpen ? null : key)
-                  }
-                >
-                  {section.label}
-                  <ChevronRight
-                    size={16}
-                    className={isOpen ? 'rotate-chevron' : ''}
-                  />
-                </button>
+                <div className="mobile-nav-row">
+                  <Link
+                    to={section.to}
+                    className="mobile-nav-link"
+                    onClick={closeMobileMenu}
+                  >
+                    {section.label}
+                  </Link>
+
+                  <button
+                    type="button"
+                    className="mobile-shop-toggle"
+                    aria-label={`Toggle ${section.label} submenu`}
+                    aria-expanded={mobileShopOpen === key}
+                    onClick={() =>
+                      setMobileShopOpen(
+                        mobileShopOpen === key ? null : key
+                      )
+                    }
+                  >
+                    <ChevronRight
+                      size={16}
+                      className={
+                        mobileShopOpen === key ? 'rotate-chevron' : ''
+                      }
+                    />
+                  </button>
+                </div>
 
                 <div
                   className={`mobile-category-list ${
-                    isOpen ? 'is-open' : ''
+                    mobileShopOpen === key ? 'is-open' : ''
                   }`}
                 >
-                  {section.links.map((link) => (
+                  {section.links.map(link => (
                     <Link
                       key={link.label}
                       to={link.to}

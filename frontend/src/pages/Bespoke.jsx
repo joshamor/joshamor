@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom'
 import './editorial-landing.css'
+import SEO from '../components/SEO'
 
 const bespokeServices = [
   {
@@ -21,6 +22,11 @@ const bespokeServices = [
 
 export default function Bespoke() {
   return (
+  <>
+    <SEO
+      title="Bespoke"
+      description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+    />
     <main className="editorial-landing">
       <section className="editorial-landing-intro">
         <p className="editorial-landing-eyebrow">
@@ -54,6 +60,7 @@ export default function Bespoke() {
           </Link>
         ))}
       </section>
-    </main>
+      </main>
+  </>
   )
 }

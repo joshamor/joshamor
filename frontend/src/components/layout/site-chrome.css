@@ -863,3 +863,8 @@
     transition: none;
   }
 }
+
+.mobile-nav-row{
+    display: flex;
+    flex-direction: row;
+}

@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom'
 import { Phone, MessageCircle } from 'lucide-react'
+import SEO from '../components/SEO'
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=2400&q=85'
@@ -11,6 +12,11 @@ const WHATSAPP_NUMBER = '2348000000000'
 
 export default function Contact() {
   return (
+    <>
+      <SEO
+        title="Contact Us"
+        description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+      />
     <main className="w-full bg-white text-[#151515]">
       <section
         className="relative flex min-h-[365px] items-center justify-center overflow-hidden bg-cover bg-center md:min-h-[480px]"
@@ -78,5 +84,6 @@ export default function Contact() {
         </div>
       </section>
     </main>
+    </>
   )
 }
