@@ -175,7 +175,7 @@
   margin: 0 0 22px;
   font-family: var(--font-display);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.01em;
 }
@@ -184,7 +184,7 @@
   max-width: 390px;
   margin: 0;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 2.3;
 }
 
@@ -273,7 +273,7 @@
   margin: 0 0 36px;
   font-family: var(--font-display);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
 }
 
@@ -288,8 +288,7 @@
 
 .footer-link-group a {
   font-family: var(--font-body);
-  font-size: 10px;
-  text-transform: uppercase;
+  font-size: 14px;
   transition: opacity 180ms ease;
 }
 
@@ -369,7 +368,7 @@
   background: transparent;
   color: inherit;
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: 14px;
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -430,15 +429,15 @@
 .mega-menu-heading {
   margin: 2px 0 24px;
   font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 500;
   text-transform: uppercase;
 }
 
 .mega-categories > a {
   margin-bottom: 26px;
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   transition: opacity 150ms ease;

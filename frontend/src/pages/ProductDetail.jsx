@@ -2,12 +2,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react'
-import products from '../data/products'
 import ProductCard from '../components/products/ProductCard'
 import { useCart } from '../context/CartContext'
+import { getProductBySlug } from '../services/api'
 import './product-detail.css'
 import { Helmet } from 'react-helmet-async'
 import SEO from '../components/SEO'
+
 
 const formatPrice = (price) =>
   new Intl.NumberFormat('en-NG', {
@@ -219,39 +220,77 @@ function SizeGuideModal({ onClose }) {
 
 
 
+
 export default function ProductDetail() {
   const { slug } = useParams()
-  const product = products.find((item) => item.slug === slug)
+  const { addItem } = useCart()
 
-  const [colorIndex, setColorIndex] = useState(-1)
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [notFound, setNotFound] = useState(false)
+
+  const [colorIndex, setColorIndex] = useState(0)
   const [imageIndex, setImageIndex] = useState(0)
   const [selectedSize, setSelectedSize] = useState('')
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
   const [cartMessage, setCartMessage] = useState('')
-  const { addItem } = useCart()
 
-  function handleAddToCart() {
-    if (!canAddToCart) return
+  const [retryCount, setRetryCount] = useState(0)
 
-    addItem(product, {
-      color: selectedColor.name,
-      size: selectedSize,
-      image: selectedColor.images[imageIndex],
-    })
+  // Fetch the product from MongoDB whenever the URL slug changes.
+  useEffect(() => {
+    let isActive = true
 
-    setCartMessage(`${product.name} added to your bag.`)
+    async function loadProduct() {
+      setLoading(true)
+      setError('')
+      setNotFound(false)
+      setProduct(null)
+
+      try {
+        const result = await getProductBySlug(slug)
+
+        if (!isActive) return
+
+        setProduct(result.data)
+        setColorIndex(0)
+        setImageIndex(0)
+        setSelectedSize('')
+        setCartMessage('')
+      } catch (err) {
+        if (!isActive) return
+
+        if (err.status === 404) {
+          setNotFound(true)
+        } else {
+          setError(err.message || 'Unable to load this product.')
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadProduct()
+
+    return () => {
+      isActive = false
+    }
+  }, [slug, retryCount])
+
+  // Loading state
+  if (loading) {
+    return (
+      <main className="product-not-found">
+        <p>Loading product...</p>
+      </main>
+    )
   }
 
-
-  useEffect(() => {
-    setColorIndex(0)
-    setImageIndex(0)
-    setSelectedSize('')
-    setCartMessage('')
-  }, [slug])
-
-
-  if (!product) {
+  // Genuine 404 state
+  if (notFound) {
     return (
       <>
         <SEO
@@ -259,6 +298,7 @@ export default function ProductDetail() {
           description="This product could not be found."
           noindex
         />
+
         <main className="product-not-found">
           <h1>Product not found</h1>
           <Link to="/">Return to home</Link>
@@ -267,34 +307,65 @@ export default function ProductDetail() {
     )
   }
 
+  // Server or connection error
+  if (error) {
+    return (
+      <>
+        <SEO
+          title="Unable to load product"
+          noindex
+        />
 
-  const activeColorIndex = colorIndex === -1 ? 0 : colorIndex
-  const selectedColor = product.colors[activeColorIndex]
-  const images = selectedColor.images
+        <main className="product-not-found">
+          <h1>Unable to load this product</h1>
+          <p>{error}</p>
+
+          <button
+            type="button"
+            onClick={() => setRetryCount((count) => count + 1)}
+          >
+            Try again
+          </button>
+        </main>
+      </>
+    )
+  }
+
+  if (!product) return null
+
+  const selectedColor = product.colors[colorIndex]
+  const images = selectedColor?.images || []
 
   const canAddToCart =
-    colorIndex !== -1 &&
+    Boolean(selectedColor) &&
     Boolean(selectedSize) &&
     product.availableSizes.includes(selectedSize)
 
-
   function changeImage(direction) {
+    if (!images.length) return
+
     setImageIndex((current) =>
       (current + direction + images.length) % images.length
     )
   }
 
+  function handleAddToCart() {
+    if (!canAddToCart) return
 
+    addItem(product, {
+      color: selectedColor.name,
+      size: selectedSize,
+      image: images[imageIndex],
+    })
 
-  const matchingProducts = products.filter((item) =>
-    product.matchingProducts?.includes(item.id)
-  )
+    setCartMessage(`${product.name} added to your bag.`)
+  }
 
   const productDescription = product.description
     ?.replace(/\s+/g, ' ')
     .trim()
 
-  const productImage = product.images?.[0]
+  const productImage = product.images?.[0] || images[0]
 
   const productSchema = {
     '@context': 'https://schema.org',
@@ -302,7 +373,7 @@ export default function ProductDetail() {
     name: product.name,
     description: productDescription,
     image: product.images || [],
-    sku: product.id,
+    sku: product.legacyId || product._id,
     brand: {
       '@type': 'Brand',
       name: 'JOSH AMOR',
@@ -311,251 +382,274 @@ export default function ProductDetail() {
       '@type': 'Offer',
       priceCurrency: product.currency || 'NGN',
       price: product.price,
-      availability: product.availableSizes?.length
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
       itemCondition: 'https://schema.org/NewCondition',
     },
   }
 
+  const matchingProducts = product.matchingProducts || []
 
   return (
-<>
+    <>
+      <SEO
+        title={product.name}
+        description={productDescription}
+        image={productImage}
+        type="product"
+      />
 
-    <SEO
-      title={product.name}
-      description={productDescription}
-      image={productImage}
-      type="product"
-    />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(productSchema)}
+        </script>
+      </Helmet>
 
-    <Helmet>
-      <script type="application/ld+json">
-        {JSON.stringify(productSchema)}
-      </script>
-    </Helmet>
+      <main className="product-detail-page">
+        <div className="product-detail-layout">
+          <section
+            className="product-gallery"
+            aria-label="Product images"
+          >
+            <div className="product-gallery-main">
+              {images.length > 0 ? (
+                <img
+                  key={`${product.id}-${colorIndex}-${imageIndex}`}
+                  className="product-gallery-image"
+                  src={images[imageIndex]}
+                  alt={`${product.name} — ${selectedColor.name}, image ${imageIndex + 1}`}
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              ) : (
+                <div className="product-gallery-image" />
+              )}
 
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="gallery-arrow gallery-arrow-left"
+                    onClick={() => changeImage(-1)}
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
 
+                  <button
+                    type="button"
+                    className="gallery-arrow gallery-arrow-right"
+                    onClick={() => changeImage(1)}
+                    aria-label="Next image"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </>
+              )}
+            </div>
 
+            {images.length > 0 && (
+              <div className="product-gallery-footer">
+                <span>
+                  {imageIndex + 1}/{images.length}
+                </span>
 
-    <main className="product-detail-page">
-      <div className="product-detail-layout">
-        <section className="product-gallery" aria-label="Product images">
-          <div className="product-gallery-main">
-            <img
-              key={`${product.id}-${activeColorIndex}-${imageIndex}`}
-              className="product-gallery-image"
-              src={images[imageIndex]}
-              alt={`${product.name} — ${selectedColor.name}, image ${imageIndex + 1}`}
-              fetchPriority="high"
-              decoding="async"
-            />
+                <div className="product-gallery-dots">
+                  {images.map((image, index) => (
+                    <button
+                      key={`${image}-${index}`}
+                      type="button"
+                      aria-label={`View image ${index + 1}`}
+                      aria-current={
+                        imageIndex === index ? 'true' : undefined
+                      }
+                      className={
+                        imageIndex === index ? 'active' : ''
+                      }
+                      onClick={() => setImageIndex(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  className="gallery-arrow gallery-arrow-left"
-                  onClick={() => changeImage(-1)}
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-
-                <button
-                  type="button"
-                  className="gallery-arrow gallery-arrow-right"
-                  onClick={() => changeImage(1)}
-                  aria-label="Next image"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </>
+              <div className="product-gallery-thumbnails">
+                {images.map((image, index) => (
+                  <button
+                    key={`${image}-thumb-${index}`}
+                    type="button"
+                    className={
+                      imageIndex === index ? 'active' : ''
+                    }
+                    onClick={() => setImageIndex(index)}
+                    aria-label={`Select image ${index + 1}`}
+                  >
+                    <img src={image} alt="" loading="lazy" />
+                  </button>
+                ))}
+              </div>
             )}
-          </div>
-
-          <div className="product-gallery-footer">
-            <span>
-              {imageIndex + 1}/{images.length}
-            </span>
-
-            <div className="product-gallery-dots">
-              {images.map((image, index) => (
-                <button
-                  key={`${image}-${index}`}
-                  type="button"
-                  aria-label={`View image ${index + 1}`}
-                  aria-current={imageIndex === index ? 'true' : undefined}
-                  className={imageIndex === index ? 'active' : ''}
-                  onClick={() => setImageIndex(index)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {images.length > 1 && (
-            <div className="product-gallery-thumbnails">
-              {images.map((image, index) => (
-                <button
-                  key={`${image}-thumb-${index}`}
-                  type="button"
-                  className={imageIndex === index ? 'active' : ''}
-                  onClick={() => setImageIndex(index)}
-                  aria-label={`Select image ${index + 1}`}
-                >
-                  <img src={image} alt="" loading="lazy" />
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <aside className="product-detail-info">
-          <div className="product-detail-heading">
-            <h1>{product.name}</h1>
-            <p>{formatPrice(product.price)}</p>
-          </div>
-
-          <ul className="product-feature-list">
-            {product.features.map((feature) => (
-              <li key={feature}>{feature}</li>
-            ))}
-          </ul>
-
-          <section className="product-color-section">
-            <div className="product-color-swatches">
-              {product.colors.map((color, index) => (
-                <button
-                  key={color.name}
-                  type="button"
-                  className={`product-color-swatch ${
-                    colorIndex === index ? 'selected' : ''
-                  }`}
-                  style={{ '--swatch-color': color.hex }}
-                  onClick={() => {
-                    setColorIndex(index)
-                    setImageIndex(0)
-                    setCartMessage('')
-                  }}
-                  aria-label={`Choose ${color.name}`}
-                  aria-pressed={colorIndex === index}
-                  title={color.name}
-                />
-              ))}
-            </div>
-
-            <p className="product-selected-color">{selectedColor.name}</p>
           </section>
 
-          <section className="product-size-section">
-            <div className="product-size-options">
-              {product.sizes.map((size) => {
-                const available = product.availableSizes.includes(size)
+          <aside className="product-detail-info">
+            <div className="product-detail-heading">
+              <h1>{product.name}</h1>
+              <p>{formatPrice(product.price)}</p>
+            </div>
 
-                return (
+            <ul className="product-feature-list">
+              {product.features.map((feature) => (
+                <li key={feature}>{feature}</li>
+              ))}
+            </ul>
+
+            <section className="product-color-section">
+              <div className="product-color-swatches">
+                {product.colors.map((color, index) => (
                   <button
-                    key={size}
+                    key={color.name}
                     type="button"
-                    disabled={!available}
-                    className={[
-                      selectedSize === size ? 'selected' : '',
-                      !available ? 'unavailable' : '',
-                    ].filter(Boolean).join(' ')}
+                    className={`product-color-swatch ${
+                      colorIndex === index ? 'selected' : ''
+                    }`}
+                    style={{ '--swatch-color': color.hex }}
                     onClick={() => {
-                      setSelectedSize(size)
+                      setColorIndex(index)
+                      setImageIndex(0)
                       setCartMessage('')
                     }}
-                    aria-pressed={selectedSize === size}
-                  >
-                    {size}
-                  </button>
-                )
-              })}
-            </div>
+                    aria-label={`Choose ${color.name}`}
+                    aria-pressed={colorIndex === index}
+                    title={color.name}
+                  />
+                ))}
+              </div>
 
-            {selectedSize && !canAddToCart && (
-              <p className="product-stock-message">
-                This size is currently unavailable.
+              {selectedColor && (
+                <p className="product-selected-color">
+                  {selectedColor.name}
+                </p>
+              )}
+            </section>
+
+            <section className="product-size-section">
+              <div className="product-size-options">
+                {product.sizes.map((size) => {
+                  const available =
+                    product.availableSizes.includes(size)
+
+                  return (
+                    <button
+                      key={size}
+                      type="button"
+                      disabled={!available}
+                      className={[
+                        selectedSize === size ? 'selected' : '',
+                        !available ? 'unavailable' : '',
+                      ].filter(Boolean).join(' ')}
+                      onClick={() => {
+                        setSelectedSize(size)
+                        setCartMessage('')
+                      }}
+                      aria-pressed={selectedSize === size}
+                    >
+                      {size}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {selectedSize && !canAddToCart && (
+                <p className="product-stock-message">
+                  This size is currently unavailable.
+                </p>
+              )}
+            </section>
+
+            <button
+              type="button"
+              className="product-add-to-cart"
+              disabled={!canAddToCart}
+              onClick={handleAddToCart}
+            >
+              Add to cart
+            </button>
+
+            {cartMessage && (
+              <p className="product-cart-message" role="status">
+                {cartMessage}
               </p>
             )}
-          </section>
 
-          <button
-            type="button"
-            className="product-add-to-cart"
-            disabled={!canAddToCart}
-            onClick={handleAddToCart}
-          >
-            Add to cart
-          </button>
+            <button
+              type="button"
+              className="product-size-guide-link"
+              onClick={() => setSizeGuideOpen(true)}
+            >
+              Size guide
+            </button>
 
-          {cartMessage && (
-            <p className="product-cart-message" role="status">
-              {cartMessage}
-            </p>
-          )}
+            <div className="product-accordions">
+              <Accordion title="Description" defaultOpen>
+                <p>{product.description}</p>
+              </Accordion>
 
-          <button
-            type="button"
-            className="product-size-guide-link"
-            onClick={() => setSizeGuideOpen(true)}
-          >
-            Size guide
-          </button>
+              <Accordion title="Details">
+                <dl className="product-details-list">
+                  {product.details.map((detail) => (
+                    <div key={detail.label}>
+                      <dt>{detail.label}</dt>
+                      <dd>{detail.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Accordion>
 
-          <div className="product-accordions">
-            <Accordion title="Description" defaultOpen>
-              <p>{product.description}</p>
-            </Accordion>
+              <Accordion title="Delivery information">
+                <h3>{product.delivery.heading}</h3>
 
-            <Accordion title="Details">
-              <dl className="product-details-list">
-                {product.details.map((detail) => (
-                  <div key={detail.label}>
-                    <dt>{detail.label}</dt>
-                    <dd>{detail.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Accordion>
+                {product.delivery.paragraphs.map(
+                  (paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  )
+                )}
 
-            <Accordion title="Delivery information">
-              <h3>{product.delivery.heading}</h3>
+                <p>
+                  <Link to="/shipping">
+                    Read shipping and returns
+                  </Link>
+                </p>
 
-              {product.delivery.paragraphs.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
+                <p>
+                  <Link to="/enquiry?subject=Shipping%20and%20returns">
+                    Contact customer service
+                  </Link>
+                </p>
+              </Accordion>
+            </div>
+          </aside>
+        </div>
+
+        {matchingProducts.length > 0 && (
+          <section className="matching-products">
+            <h2>Matching products</h2>
+
+            <div className="matching-products-grid">
+              {matchingProducts.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  product={item}
+                />
               ))}
+            </div>
+          </section>
+        )}
 
-              <p>
-                <Link to="/shipping">Read shipping and returns</Link>
-              </p>
-
-              <p>
-                <Link to="/enquiry?subject=Shipping%20and%20returns">
-                  Contact customer service
-                </Link>
-              </p>
-            </Accordion>
-          </div>
-        </aside>
-      </div>
-
-      {matchingProducts.length > 0 && (
-        <section className="matching-products">
-          <h2>Matching products</h2>
-
-          <div className="matching-products-grid">
-            {matchingProducts.map((item) => (
-              <ProductCard key={item.id} product={item} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {sizeGuideOpen && (
-        <SizeGuideModal onClose={() => setSizeGuideOpen(false)} />
-      )}
+        {sizeGuideOpen && (
+          <SizeGuideModal
+            onClose={() => setSizeGuideOpen(false)}
+          />
+        )}
       </main>
-</>
+    </>
   )
 }

@@ -291,14 +291,6 @@ const products = [
     category: 'Casual Wear', createdAt: '2026-09-10',
     colors: ['White', 'Blue', 'Grey'], imageIndex: 0,
   }),
-
-  makePlaceholderProduct({
-    id: '016', slug: 'classic-tailored-blazer',
-    name: 'Classic Tailored Blazer', price: 525000,
-    category: 'Blazers', createdAt: '2026-09-05',
-    colors: ['Black', 'Brown'], imageIndex: 1,
-    availableSizes: ['XS', 'S', 'M', 'L'],
-  }),
 ]
 
 export default products

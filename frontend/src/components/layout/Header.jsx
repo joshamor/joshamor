@@ -18,6 +18,7 @@ import SearchOverlay from './SearchOverlay'
 import { useCart } from '../../context/CartContext'
 
 import MyLogo from "../../assets/logo.svg?react"
+import logo from "../../assets/logo.png"
 
 
 
@@ -121,7 +122,7 @@ export default function Header() {
         onMouseLeave={scheduleClose}
       >
         <Link to="/" className="header-logo max-[900px]:!col-start-1 max-[900px]:!justify-self-start">
-         <MyLogo className="w-50" />
+         <img src={logo} className="h-3" />
         </Link>
 
 
@@ -166,7 +167,7 @@ export default function Header() {
             }}
             onFocus={() => setActiveMenu(null)}
           >
-            Collections
+            <p className='shop-trigger'>Collections</p>
           </Link>
 
           <button

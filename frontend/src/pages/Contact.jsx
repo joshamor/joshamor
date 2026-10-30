@@ -7,8 +7,8 @@ const HERO_IMAGE =
   'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=2400&q=85'
 
 // Replace these with your actual customer-service number.
-const PHONE_NUMBER = '+2348000000000'
-const WHATSAPP_NUMBER = '2348000000000'
+const PHONE_NUMBER = '2348165850707'
+const WHATSAPP_NUMBER = '2349054827630'
 
 export default function Contact() {
   return (

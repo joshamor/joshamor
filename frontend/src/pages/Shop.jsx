@@ -1,18 +1,18 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import products from '../data/products'
+
+import { getProducts } from '../services/api'
 import ProductGrid from '../components/products/ProductGrid'
 import ShopFilterDrawer from '../components/products/ShopFilterDrawer'
+import ShopCategoryNavigation from '../components/products/ShopCategoryNavigation'
+
 import {
   getShopCategoryOrDefault,
-  getProductsForCategory,
 } from '../data/shopCategories'
 
-import ShopCategoryNavigation from
-  '../components/products/ShopCategoryNavigation'
-import './shop.css'
 import SEO from '../components/SEO'
+import './shop.css'
 
 const INITIAL_FILTERS = {
   sort: 'Standard',
@@ -20,12 +20,13 @@ const INITIAL_FILTERS = {
   sizes: [],
 }
 
-
 function matchesColor(product, selectedColors) {
   if (!selectedColors.length) return true
 
   const normalizeColor = (name) =>
-    name.toLowerCase() === 'dark brown' ? 'brown' : name.toLowerCase()
+    name.toLowerCase() === 'dark brown'
+      ? 'brown'
+      : name.toLowerCase()
 
   return (product.colors || []).some((color) =>
     selectedColors.some(
@@ -34,8 +35,6 @@ function matchesColor(product, selectedColors) {
     )
   )
 }
-
-
 
 function matchesSize(product, selectedSizes) {
   if (!selectedSizes.length) return true
@@ -51,20 +50,30 @@ function sortProducts(items, sort) {
   switch (sort) {
     case 'Latest':
       return result.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        (a, b) =>
+          new Date(b.publishedAt || b.createdAt) -
+          new Date(a.publishedAt || a.createdAt)
       )
+
     case 'Oldest':
       return result.sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        (a, b) =>
+          new Date(a.publishedAt || a.createdAt) -
+          new Date(b.publishedAt || b.createdAt)
       )
+
     case 'Price: Low to High':
       return result.sort((a, b) => a.price - b.price)
+
     case 'Price: High to Low':
       return result.sort((a, b) => b.price - a.price)
+
     case 'A-Z':
       return result.sort((a, b) => a.name.localeCompare(b.name))
+
     case 'Z-A':
       return result.sort((a, b) => b.name.localeCompare(a.name))
+
     default:
       return result
   }
@@ -76,12 +85,6 @@ export default function Shop() {
 
   const category = getShopCategoryOrDefault(categorySlug)
 
-  const categoryTitle =
-    category?.title ||
-    category?.name ||
-    category?.label ||
-    'Shop All'
-
   const shopTitle = category.seoTitle
   const shopDescription = category.seoDescription
 
@@ -89,33 +92,70 @@ export default function Shop() {
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [subcategory, setSubcategory] = useState(null)
 
-  // Reset the subcategory when navigating to a different category.
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
+
+  // Redirect invalid category URLs.
   useEffect(() => {
-    if (
-      categorySlug &&
-      category.slug !== categorySlug
-    ) {
+    if (categorySlug && category.slug !== categorySlug) {
       navigate('/shop', { replace: true })
     }
   }, [categorySlug, category, navigate])
 
-
-  // Redirect invalid category URLs instead of displaying all products.
+  // Reset filters and subcategory when changing categories.
   useEffect(() => {
-    if (categorySlug && !category) {
-      navigate('/shop', { replace: true })
+    setFilters(INITIAL_FILTERS)
+    setSubcategory(null)
+  }, [categorySlug])
+
+  // Fetch published products from MongoDB.
+  useEffect(() => {
+    let isActive = true
+
+    async function loadProducts() {
+      // Avoid fetching all products while an invalid URL redirects.
+      if (categorySlug && category.slug !== categorySlug) return
+
+      setLoading(true)
+      setError('')
+
+      try {
+        const options = {
+          limit: 50,
+        }
+
+        if (category.slug) {
+          options.category = category.slug
+        }
+
+        const result = await getProducts(options)
+
+        if (isActive) {
+          setProducts(result.data || [])
+        }
+      } catch (err) {
+        if (isActive) {
+          setError(err.message || 'Unable to load products.')
+          setProducts([])
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
+      }
     }
-  }, [categorySlug, category, navigate])
+
+    loadProducts()
+
+    return () => {
+      isActive = false
+    }
+  }, [categorySlug, category.slug, retryCount])
 
   const visibleProducts = useMemo(() => {
-    // Don't show all products while an invalid URL is being redirected.
-    if (categorySlug && !category) return []
-
-
-    const categoryProducts = getProductsForCategory(products, category)
-
-
-    const subcategoryProducts = categoryProducts.filter((product) => {
+    const subcategoryProducts = products.filter((product) => {
       if (!subcategory) return true
       return product.category === subcategory
     })
@@ -126,64 +166,86 @@ export default function Shop() {
     )
 
     return sortProducts(filtered, filters.sort)
-  }, [categorySlug, category, subcategory, filters])
+  }, [products, subcategory, filters])
 
   return (
-  <>
+    <>
       <SEO
         title={shopTitle}
         description={shopDescription}
       />
 
-    <main className="shop-page">
-      <ShopCategoryNavigation
-        category={category}
-        subcategory={subcategory}
-        onSubcategoryChange={setSubcategory}
-      />
+      <main className="shop-page">
+        <ShopCategoryNavigation
+          category={category}
+          subcategory={subcategory}
+          onSubcategoryChange={setSubcategory}
+        />
 
-      <div className="shop-toolbar">
-        <button
-          type="button"
-          className="shop-filter-trigger"
-          onClick={() => setDrawerOpen(true)}
-        >
-          Filter &amp; Sort
-
-          {(filters.colors.length + filters.sizes.length > 0) && (
-            <span>
-              {' '}({filters.colors.length + filters.sizes.length})
-            </span>
-          )}
-        </button>
-      </div>
-
-      {visibleProducts.length > 0 ? (
-        <ProductGrid products={visibleProducts} columns={5} />
-      ) : (
-        <div className="shop-empty">
-          <p>No products match your selected filters.</p>
-
+        <div className="shop-toolbar">
           <button
             type="button"
-            onClick={() => {
-              setFilters(INITIAL_FILTERS)
-              setSubcategory(null)
-            }}
+            className="shop-filter-trigger"
+            onClick={() => setDrawerOpen(true)}
           >
-            Clear filters
+            Filter &amp; Sort
+
+            {(filters.colors.length + filters.sizes.length > 0) && (
+              <span>
+                {' '}({filters.colors.length + filters.sizes.length})
+              </span>
+            )}
           </button>
         </div>
-      )}
 
-      <ShopFilterDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        filters={filters}
-        onApply={setFilters}
-        resultCount={visibleProducts.length}
-      />
+        {loading ? (
+          <div className="shop-empty">
+            <p>Loading products...</p>
+          </div>
+        ) : error ? (
+          <div className="shop-empty">
+            <p>{error}</p>
+
+            <button
+              type="button"
+              onClick={() => setRetryCount((count) => count + 1)}
+            >
+              Try again
+            </button>
+          </div>
+        ) : visibleProducts.length > 0 ? (
+          <ProductGrid
+            products={visibleProducts}
+            columns={5}
+          />
+        ) : (
+          <div className="shop-empty">
+            <p>
+              {products.length === 0
+                ? 'No products are currently available.'
+                : 'No products match your selected filters.'}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setFilters(INITIAL_FILTERS)
+                setSubcategory(null)
+              }}
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
+
+        <ShopFilterDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          filters={filters}
+          onApply={setFilters}
+          resultCount={visibleProducts.length}
+        />
       </main>
-  </>
+    </>
   )
 }

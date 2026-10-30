@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/logo.svg?react"
+import MyLogo from "../../assets/logo.svg?react"
+import logo from "../../assets/logo.png"
 
 
 
@@ -82,7 +83,7 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <Link to="/" className="footer-logo">
-        <Logo className="w-60" />
+        <img src={logo} className="h-3" />
       </Link>
 
       <div className="footer-content">
@@ -106,7 +107,7 @@ export default function Footer() {
                 aria-label="Your email"
                 autoComplete="email"
                 required
-                className="h-11 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-neutral-500"
+                className="h-11 min-w-0 flex-1 bg-transparent text-s outline-none placeholder:text-neutral-500"
               />
 
               <button
@@ -116,7 +117,7 @@ export default function Footer() {
                   !email.trim() ||
                   newsletterStatus === 'sending'
                 }
-                className="py-3 pl-4 text-xs uppercase tracking-wider transition-opacity hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-40"
+                className="py-3 pl-4 text-s uppercase tracking-wider transition-opacity hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {newsletterStatus === 'sending' ? 'Joining…' : 'Sign up'}
               </button>
@@ -131,7 +132,7 @@ export default function Footer() {
                 className="mt-1 accent-black"
               />
 
-              <span>
+              <span className="text-sm">
                 Yes, I agree to receive email updates and consent to the{' '}
                 <Link
                   to="/privacy-policy"

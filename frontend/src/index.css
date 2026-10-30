@@ -3,9 +3,8 @@
 
 
 @font-face {
-  font-family: "Boogy Brut";
-  src: url("./assets/fonts/boogy-brut-regular.otf") format("woff2");
-  font-weight: 700;
+  font-family: "Futura";
+  src: url("./assets/fonts/Futura.ttf") format("truetype");
   font-style: normal;
   font-display: swap;
 }
@@ -19,7 +18,7 @@
 }
 
 :root {
-  --font-display: "Jost", sans-serif;
+  --font-display: "Futura", sans-serif;
   --font-body: "Jost", sans-serif;
 }
 
