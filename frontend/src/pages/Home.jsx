@@ -1,5 +1,5 @@
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import products from '../data/products'
@@ -167,6 +167,56 @@ function ProductRail({ items, title }) {
 }
 
 
+function AutoplayVideo({ src, poster, className }) {
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+
+    if (!video) return
+
+    // Explicitly configure the video for mobile autoplay
+    video.muted = true
+    video.defaultMuted = true
+    video.playsInline = true
+
+    const attemptPlay = async () => {
+      try {
+        await video.play()
+      } catch (error) {
+        console.warn('Video autoplay was blocked:', error)
+      }
+    }
+
+    // Attempt playback once the video is ready
+    if (video.readyState >= 2) {
+      attemptPlay()
+    } else {
+      video.addEventListener('canplay', attemptPlay, { once: true })
+    }
+
+    return () => {
+      video.removeEventListener('canplay', attemptPlay)
+    }
+  }, [src])
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      muted
+      defaultMuted
+      loop
+      playsInline
+      preload="metadata"
+      poster={poster}
+      className={className}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  )
+}
+
 export default function Home() {
   const featuredProducts = products.slice(0, 2)
 
@@ -193,16 +243,10 @@ export default function Home() {
             className="block aspect-[1.34/1] w-[76%] max-w-[1440px] overflow-hidden bg-[#e8e8e8] max-md:aspect-[0.82/1] max-md:w-full max-md:max-w-none"
             aria-label="Discover the latest collection"
           >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
+            <AutoplayVideo
+              src="/videos/home-hero.mp4"
               className="block h-full w-full object-cover object-[center_35%]"
-            >
-              <source src="/videos/home-hero.mp4" type="video/mp4" />
-            </video>
+            />
           </Link>
         </section>
 
@@ -248,20 +292,10 @@ export default function Home() {
             className="block aspect-[0.88/1] min-w-0 overflow-hidden bg-[#eee] max-md:aspect-[0.72/1]"
             aria-label="Explore the campaign library"
           >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={editorialImages[1]}
+            <AutoplayVideo
+              src="/videos/campaign-placeholder.mp4"
               className="block h-full w-full object-cover object-center"
-            >
-              <source
-                src="/videos/campaign-placeholder.mp4"
-                type="video/mp4"
-              />
-            </video>
+            />
           </Link>
 
           <Link
