@@ -234,12 +234,7 @@ export default function Home() {
       <main className="m-0 w-full overflow-hidden bg-white text-[#171717] [&_a]:text-inherit [&_a]:no-underline">
         {/* 1. Portrait campaign video */}
         <section className="mb-3 flex justify-center p-0">
-          <Link
-            to={
-              featuredProducts[0]
-                ? `/products/${featuredProducts[0].slug}`
-                : '/shop'
-            }
+          <div
             className="block aspect-[1.34/1] w-[76%] max-w-[1440px] overflow-hidden bg-[#e8e8e8] max-md:aspect-[0.82/1] max-md:w-full max-md:max-w-none"
             aria-label="Discover the latest collection"
           >
@@ -247,7 +242,7 @@ export default function Home() {
               src="/videos/home-hero.mp4"
               className="block h-full w-full object-cover object-[center_35%]"
             />
-          </Link>
+          </div>
         </section>
 
         {/* 2. Two editorial feature images */}
@@ -287,8 +282,8 @@ export default function Home() {
         />
 
         {/* 4. Campaign video and still image */}
-        <section className="grid grid-cols-2 gap-0 mb-3 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]">          <Link
-            to="/campaigns"
+        <section className="grid grid-cols-2 gap-0 mb-3 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]">
+          <div
             className="block aspect-[0.88/1] min-w-0 overflow-hidden bg-[#eee] max-md:aspect-[0.72/1]"
             aria-label="Explore the campaign library"
           >
@@ -296,7 +291,7 @@ export default function Home() {
               src="/videos/campaign-placeholder.mp4"
               className="block h-full w-full object-cover object-center"
             />
-          </Link>
+          </div>
 
           <Link
             to="/lookbook"
