@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import productRoutes from './routes/productRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import adminAuthRoutes from './routes/adminAuthRoutes.js'
+import adminProductRoutes from './routes/adminProductRoutes.js'
 
 const app = express()
 
@@ -37,6 +38,7 @@ app.use(cookieParser())
 app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/admin/auth', adminAuthRoutes)
+app.use('/api/admin/products', adminProductRoutes)
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({

@@ -379,7 +379,7 @@ export default function Header() {
           })}
 
           <Link
-            to="/contact"
+            to="/appointment"
             className="mobile-nav-link"
             onClick={closeMobileMenu}
           >

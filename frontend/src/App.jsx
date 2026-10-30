@@ -18,6 +18,7 @@ import ProductDetail from './pages/ProductDetail'
 import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Updates from './pages/Updates'
+import MakeAppointment from './pages/MakeAppointment'
 
 import Collections from './pages/Collections'
 import Bespoke from './pages/Bespoke'
@@ -82,7 +83,10 @@ function AnimatedRoutes() {
           <Route path="/shipping" element={<Shipping />} />
           <Route path="/campaigns" element={<CampaignLibrary />} />
           <Route path="/lookbook" element={<Lookbook />} />
-          <Route path="/appointments" element={<Contact />} />
+          <Route
+            path="/appointment"
+            element={<MakeAppointment />}
+          />
           <Route path="/updates" element={<Updates />} />
 
           <Route path="/collections" element={<Collections />} />
