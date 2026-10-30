@@ -202,3 +202,215 @@ export async function updateProduct(req, res, next) {
     next(error)
   }
 }
+
+
+// Check whether a product has the minimum information required to publish.
+function getPublishingErrors(product) {
+  const errors = []
+
+  if (!product.name?.trim()) {
+    errors.push('Product name is required.')
+  }
+
+  if (!product.slug?.trim()) {
+    errors.push('Product slug is required.')
+  }
+
+  if (!product.description?.trim()) {
+    errors.push('Product description is required.')
+  }
+
+  if (typeof product.price !== 'number' || product.price <= 0) {
+    errors.push('Product price must be greater than zero.')
+  }
+
+  if (!product.category) {
+    errors.push('A product category is required.')
+  }
+
+  if (!product.images?.length) {
+    errors.push('At least one product image is required.')
+  }
+
+  if (!product.images?.some(image => image?.url?.trim())) {
+    errors.push('At least one valid product image URL is required.')
+  }
+
+  if (!product.colors?.length) {
+    errors.push('At least one product colour is required.')
+  }
+
+  if (!product.sizes?.length) {
+    errors.push('At least one product size is required.')
+  }
+
+  if (product.isPlaceholder) {
+    errors.push('Placeholder products cannot be published.')
+  }
+
+  return errors
+}
+
+// PATCH /api/admin/products/:id/publish
+export async function publishProduct(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID.',
+      })
+    }
+
+    const product = await Product.findById(req.params.id)
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.',
+      })
+    }
+
+    if (product.status === 'archived') {
+      return res.status(400).json({
+        success: false,
+        message: 'Restore this product to draft before publishing it.',
+      })
+    }
+
+    const errors = getPublishingErrors(product)
+
+    if (errors.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'This product is not ready to be published.',
+        errors,
+      })
+    }
+
+    // Only assign publishedAt the first time the product is published.
+    if (!product.publishedAt) {
+      product.publishedAt = new Date()
+    }
+
+    product.status = 'published'
+    await product.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Product published successfully.',
+      data: { product },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// PATCH /api/admin/products/:id/unpublish
+export async function unpublishProduct(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID.',
+      })
+    }
+
+    const product = await Product.findById(req.params.id)
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.',
+      })
+    }
+
+    if (product.status !== 'published') {
+      return res.status(400).json({
+        success: false,
+        message: 'Only published products can be unpublished.',
+      })
+    }
+
+    product.status = 'draft'
+    await product.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Product unpublished successfully.',
+      data: { product },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// PATCH /api/admin/products/:id/archive
+export async function archiveProduct(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID.',
+      })
+    }
+
+    const product = await Product.findById(req.params.id)
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.',
+      })
+    }
+
+    product.status = 'archived'
+    await product.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Product archived successfully.',
+      data: { product },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// PATCH /api/admin/products/:id/restore
+export async function restoreProduct(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID.',
+      })
+    }
+
+    const product = await Product.findById(req.params.id)
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.',
+      })
+    }
+
+    if (product.status !== 'archived') {
+      return res.status(400).json({
+        success: false,
+        message: 'Only archived products can be restored.',
+      })
+    }
+
+    product.status = 'draft'
+    await product.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Product restored to drafts successfully.',
+      data: { product },
+    })
+  } catch (error) {
+    next(error)
+  }
+}

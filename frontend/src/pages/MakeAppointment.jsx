@@ -258,7 +258,7 @@ export default function MakeAppointment() {
                 {/* Additional Information */}
                 <div className="sm:col-span-2">
                   <label htmlFor="message" className={labelClass}>
-                    Additional Information
+                   Message
                   </label>
 
                   <textarea
@@ -269,6 +269,8 @@ export default function MakeAppointment() {
                     className="w-full resize-y border-b border-neutral-300 bg-transparent px-0 py-3 text-sm leading-7 text-[#151515] outline-none transition-colors placeholder:text-neutral-400 focus:border-[#151515]"
                   />
                 </div>
+
+                <span className=" flex mt-2 text-center text-sm leading-5 text-neutral-500"> We respect your privacy and the information you provide, will only be used to contact you to confirm your Bespoke appointment</span>
               </div>
 
               {/* Submission Status */}
