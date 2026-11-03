@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom'
 import './shipping.css'
+import SEO from "../components/SEO"
 
 const heroImage =
   'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=2400&q=85'
@@ -15,6 +16,11 @@ function EnquiryLink({ subject, children }) {
 
 export default function Shipping() {
   return (
+  <>
+  <SEO
+    title="Shipping and Returns"
+    description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+  />
     <main className="shipping-page">
       <section
         className="shipping-hero"
@@ -209,6 +215,7 @@ export default function Shipping() {
           </p>
         </section>
       </article>
-    </main>
+      </main>
+  </>
   )
 }

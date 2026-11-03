@@ -1,6 +1,7 @@
 
 import mongoose from 'mongoose'
 
+
 export async function connectDatabase() {
   try {
     const connection = await mongoose.connect(

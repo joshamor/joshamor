@@ -270,7 +270,8 @@ export default function MakeAppointment() {
                   />
                 </div>
 
-                <span className=" flex mt-2 text-center text-sm leading-5 text-neutral-500"> We respect your privacy and the information you provide, will only be used to contact you to confirm your Bespoke appointment</span>
+                <span className=" flex mt-2 text-center text-sm leading-5 text-neutral-500"> We respect your privacy and the information you provide,
+                  will only be used to contact you to confirm your Bespoke appointment</span>
               </div>
 
               {/* Submission Status */}

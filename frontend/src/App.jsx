@@ -19,11 +19,15 @@ import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Updates from './pages/Updates'
 import MakeAppointment from './pages/MakeAppointment'
+import BackToTopButton from './components/BackToTopButton'
+import PaymentReturn from './pages/PaymentReturn'
 
 import Collections from './pages/Collections'
 import Bespoke from './pages/Bespoke'
 import Tailoring from './pages/Tailoring'
 import Groomswear from './pages/Groomswear'
+
+import AdminRoutes from './admin/AdminRoutes'
 
 
 import './components/layout/site-chrome.css'
@@ -75,6 +79,10 @@ function AnimatedRoutes() {
       >
         <Routes location={location}>
           <Route path="/" element={<Home />} />
+          <Route
+            path="/checkout/payment-return"
+            element={<PaymentReturn />}
+          />
           <Route path="/contact" element={<Contact />} />
           <Route path="/our-story" element={<About />} />
           <Route path="/career" element={<Careers />} />
@@ -135,11 +143,23 @@ function StoreRoutes() {
   )
 }
 
-export default function App() {
+function AppContent() {
+  const location = useLocation()
+  const isAdminRoute = location.pathname.startsWith('/admin')
+
+  if (isAdminRoute) {
+    return <AdminRoutes />
+  }
+
   return (
     <CartProvider>
       <ScrollToTop />
+      <BackToTopButton />
       <StoreRoutes />
     </CartProvider>
   )
+}
+
+export default function App() {
+  return <AppContent />
 }

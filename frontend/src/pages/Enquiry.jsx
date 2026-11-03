@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import './enquiry.css'
+import SEO from '../components/SEO'
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mzeerkja'
 
@@ -86,6 +87,11 @@ export default function Enquiry() {
 
 
   return (
+    <>
+    <SEO
+      title="Enquiry"
+      description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
+    />
     <main className="min-h-screen bg-white px-5 py-16 text-[#151515] md:px-10 md:py-24">
       <section className="mx-auto max-w-2xl text-center">
         <p className="mb-4 text-[10px] uppercase tracking-[0.2em]">
@@ -222,7 +228,8 @@ export default function Enquiry() {
           </form>
         )}
       </section>
-    </main>
+      </main>
+    </>
   )
 
 }

@@ -13,8 +13,6 @@ const editableFields = [
   'images',
   'colors',
   'sizes',
-  'availableSizes',
-  'variants',
   'features',
   'material',
   'madeIn',
@@ -102,6 +100,113 @@ function handleDatabaseError(error, res) {
     success: false,
     message: 'Unable to save the product right now.',
   })
+}
+
+// GET /api/admin/products
+export async function getAdminProducts(req, res, next) {
+  try {
+    const {
+      search = '',
+      status = 'all',
+      category = '',
+      page = '1',
+      limit = '20',
+    } = req.query
+
+    const pageNumber = Math.max(1, Number.parseInt(page, 10) || 1)
+    const pageSize = Math.min(
+      50,
+      Math.max(1, Number.parseInt(limit, 10) || 20)
+    )
+
+    const filter = {}
+
+    // Filter by product status.
+    if (status !== 'all') {
+      if (!['draft', 'published', 'archived'].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid product status filter.',
+        })
+      }
+
+      filter.status = status
+    }
+
+    // Search product name or slug.
+    const searchTerm = search.trim()
+
+    if (searchTerm) {
+      const escapedSearch = searchTerm.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&'
+      )
+
+      filter.$or = [
+        { name: { $regex: escapedSearch, $options: 'i' } },
+        { slug: { $regex: escapedSearch, $options: 'i' } },
+      ]
+    }
+
+    // Category can be supplied as a MongoDB ID or category slug.
+    if (category) {
+      let categoryRecord = null
+
+      if (mongoose.isValidObjectId(category)) {
+        categoryRecord = await Category.findById(category).select('_id')
+      } else {
+        categoryRecord = await Category.findOne({
+          slug: category,
+        }).select('_id')
+      }
+
+      if (!categoryRecord) {
+        return res.status(200).json({
+          success: true,
+          data: {
+            products: [],
+            pagination: {
+              page: pageNumber,
+              limit: pageSize,
+              total: 0,
+              pages: 0,
+            },
+          },
+        })
+      }
+
+      filter.category = categoryRecord._id
+    }
+
+    const [products, total] = await Promise.all([
+      Product.find(filter)
+        .populate('category', 'name slug')
+        .select(
+          'name slug price currency category images colors status featured isPlaceholder publishedAt createdAt updatedAt'
+        )
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .lean(),
+
+      Product.countDocuments(filter),
+    ])
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        products,
+        pagination: {
+          page: pageNumber,
+          limit: pageSize,
+          total,
+          pages: Math.ceil(total / pageSize),
+        },
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 // POST /api/admin/products
@@ -282,7 +387,7 @@ export async function publishProduct(req, res, next) {
     if (errors.length) {
       return res.status(400).json({
         success: false,
-        message: 'This product is not ready to be published.',
+        message: 'This product is not ready to be published. Fill out the necessary details',
         errors,
       })
     }
@@ -408,6 +513,36 @@ export async function restoreProduct(req, res, next) {
     return res.status(200).json({
       success: true,
       message: 'Product restored to drafts successfully.',
+      data: { product },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// GET /api/admin/products/:id
+export async function getAdminProduct(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID.',
+      })
+    }
+
+    const product = await Product.findById(req.params.id)
+      .populate('category', 'name slug')
+      .populate('matchingProducts', 'name slug price images status')
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
       data: { product },
     })
   } catch (error) {

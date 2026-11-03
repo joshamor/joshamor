@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import Admin from '../models/Admin.js'
 
 const COOKIE_NAME = 'josh_amor_admin_token'
-const SESSION_DURATION = 15 * 60 * 1000
+const SESSION_DURATION = 30 * 60 * 1000
 
 const cookieOptions = () => ({
   httpOnly: true,

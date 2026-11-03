@@ -3,6 +3,15 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { X, Plus, Minus } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
+import {
+  syncGuestCart,
+  saveGuestCartContact,
+  subscribeToNewsletter,
+  createGuestOrder,
+  simulateGuestPayment,
+  initializeFlutterwaveCheckout,
+} from '../../services/api'
+
 import './cart-drawer.css'
 
 
@@ -58,14 +67,39 @@ export default function CartDrawer() {
     setCartOpen,
     updateQuantity,
     removeItem,
+    cartSyncStatus,
+    cartSyncError,
+    cartSyncDetails,
+    guestCartId,
+    clearCart,
+     startNewGuestCart,
   } = useCart()
 
   const [shipping, setShipping] = useState('standard')
   const [showDiscount, setShowDiscount] = useState(false)
   const [discountCode, setDiscountCode] = useState('')
   const [newsletter, setNewsletter] = useState(false)
+  const [newsletterStatus, setNewsletterStatus] = useState('idle')
+  const [newsletterMessage, setNewsletterMessage] = useState('')
+  const [newsletterSubmittedEmail, setNewsletterSubmittedEmail] = useState('')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [checkoutMessage, setCheckoutMessage] = useState('')
+  const [abandonedEmailConsent, setAbandonedEmailConsent] = useState(false)
+
+
+  // Order creation
+  const [orderCreating, setOrderCreating] = useState(false)
+  const [pendingOrder, setPendingOrder] = useState(null)
+
+  // Checkout screen
+  const [checkoutStep, setCheckoutStep] = useState('details')
+
+  // Payment simulation
+  const [paymentProcessing, setPaymentProcessing] = useState(false)
+  const [paymentError, setPaymentError] = useState('')
+
+  const [contactSaving, setContactSaving] = useState(false)
+  const [contactMessage, setContactMessage] = useState('')
   const [customer, setCustomer] = useState({
     country: 'Nigeria',
     email: '',
@@ -100,7 +134,47 @@ export default function CartDrawer() {
     }))
   }
 
-  function handleCheckout(event) {
+  async function saveCustomerContact(
+    emailValue = customer.email,
+    consentValue = abandonedEmailConsent
+  ) {
+    const email = emailValue.trim().toLowerCase()
+
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+    if (!validEmail || !guestCartId || !items.length) {
+      return
+    }
+
+    try {
+      setContactSaving(true)
+      setContactMessage('')
+
+      // Ensure the latest cart exists on the backend first.
+      await syncGuestCart(guestCartId, items)
+
+      // Save the customer's email and reminder preference.
+      await saveGuestCartContact(
+        guestCartId,
+        email,
+        consentValue
+      )
+
+      setContactMessage(
+        consentValue
+          ? 'Your cart reminder preference has been saved.'
+          : 'Your contact email has been saved.'
+      )
+    } catch (error) {
+      setContactMessage(
+        error.message || 'Unable to save your contact information.'
+      )
+    } finally {
+      setContactSaving(false)
+    }
+  }
+
+  async function handleCheckout(event) {
     event.preventDefault()
 
     if (!items.length) return
@@ -110,10 +184,180 @@ export default function CartDrawer() {
       return
     }
 
-    setCheckoutMessage(
-      'Your details are valid. Secure payment will be available once checkout is connected.'
-    )
+    const email = customer.email.trim().toLowerCase()
+
+    const form = event.currentTarget
+    const website = form.elements.website?.value || ''
+
+    try {
+      setOrderCreating(true)
+      setCheckoutMessage('')
+
+      // First ensure the latest cart is saved on the backend.
+      await syncGuestCart(guestCartId, items)
+
+      // Save the customer's email and abandoned-cart preference.
+      await saveGuestCartContact(
+        guestCartId,
+        email,
+        abandonedEmailConsent
+      )
+
+      // Create the order using server-validated product prices,
+      // quantities, stock and shipping costs.
+      const response = await createGuestOrder(
+        guestCartId,
+        {
+          customer: {
+            email,
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            phone: customer.phone,
+          },
+
+          shippingAddress: {
+            country: customer.country,
+            state: customer.state,
+            city: customer.city,
+            address: customer.address,
+            apartment: customer.apartment,
+            postalCode: customer.postalCode,
+          },
+
+          shippingMethod: shipping,
+          termsAccepted: acceptedTerms,
+        }
+      )
+
+      const createdOrder = response.data
+
+      setPendingOrder(createdOrder)
+      setPaymentError('')
+      setCheckoutStep('payment')
+
+
+      // Newsletter signup uses Kit and remains independent
+      // of transactional emails and abandoned-cart consent.
+      if (
+        newsletter &&
+        newsletterSubmittedEmail !== email
+      ) {
+        try {
+          setNewsletterStatus('sending')
+          setNewsletterMessage('')
+
+          await subscribeToNewsletter({
+            email,
+            consent: true,
+            website,
+          })
+
+          setNewsletterSubmittedEmail(email)
+          setNewsletterStatus('success')
+          setNewsletterMessage(
+            'Thank you for joining the Inner Circle.'
+          )
+        } catch {
+          setNewsletterStatus('error')
+          setNewsletterMessage(
+            "We couldn't process your newsletter signup. You can still complete your order."
+          )
+        }
+      }
+    } catch (error) {
+      setCheckoutMessage(
+        error.message || 'Unable to create your order. Please try again.'
+      )
+    } finally {
+      setOrderCreating(false)
+    }
   }
+
+  const handleFlutterwavePayment = async () => {
+    if (!pendingOrder?.orderId || !guestCartId) {
+      setPaymentError('Your order details could not be found. Please try again.')
+      return
+    }
+
+    try {
+      setPaymentProcessing(true)
+      setPaymentError('')
+
+      const response = await initializeFlutterwaveCheckout(
+        guestCartId,
+        pendingOrder.orderId
+      )
+
+      const checkoutUrl = response?.data?.checkoutUrl
+
+      if (!checkoutUrl) {
+        throw new Error('Unable to retrieve the payment checkout link.')
+      }
+
+      window.location.assign(checkoutUrl)
+    } catch (error) {
+      console.error('Flutterwave initialization failed:', error)
+
+      setPaymentError(
+        error.message || 'Unable to start payment. Please try again.'
+      )
+    } finally {
+      setPaymentProcessing(false)
+    }
+  }
+
+
+  async function handleSimulatedPayment(outcome) {
+    if (!pendingOrder?.orderId || paymentProcessing) return
+
+    try {
+      setPaymentProcessing(true)
+      setPaymentError('')
+
+      const response = await simulateGuestPayment(
+        guestCartId,
+        pendingOrder.orderId,
+        outcome
+      )
+
+      const paymentResult = response.data
+
+      setPendingOrder(current => ({
+        ...current,
+        ...paymentResult,
+      }))
+
+      if (
+        outcome === 'success' &&
+        (
+          paymentResult.paymentStatus === 'successful' ||
+          paymentResult.alreadyPaid
+        )
+      ) {
+        setCheckoutStep('success')
+
+        // Clear the purchased items.
+        clearCart()
+
+        // Give the customer a completely new anonymous cart.
+        startNewGuestCart()
+
+      } else {
+        setPaymentError(
+          outcome === 'failure'
+            ? 'Your simulated payment was unsuccessful. You can try again.'
+            : 'Payment could not be completed. Please review your cart availability.'
+        )
+      }
+    } catch (error) {
+      setPaymentError(
+        error.message || 'Unable to process payment.'
+      )
+    } finally {
+      setPaymentProcessing(false)
+    }
+  }
+
 
   return (
     <AnimatePresence>
@@ -151,7 +395,164 @@ export default function CartDrawer() {
             </header>
 
             <div className="cart-drawer-scroll">
-              {items.length === 0 ? (
+            {cartSyncStatus === 'syncing' && (
+              <div className="cart-sync-message" role="status">
+                Checking product availability...
+              </div>
+            )}
+
+            {cartSyncStatus === 'error' && (
+              <div className="cart-sync-error" role="alert">
+                <p>{cartSyncError}</p>
+
+                {cartSyncDetails.map((detail, index) => (
+                  <p key={`${detail.variantId || detail.productId}-${index}`}>
+                    {detail.reason === 'insufficient_stock'
+                      ? `Only ${detail.available} unit(s) of ${
+                          detail.sku || 'this variant'
+                        } are available. You requested ${detail.requested}.`
+                      : detail.reason === 'product_unavailable'
+                        ? 'A product in your cart is no longer available.'
+                        : detail.reason === 'variant_unavailable'
+                          ? 'A selected product variant is no longer available.'
+                          : 'Please review your cart and try again.'}
+                  </p>
+                ))}
+
+                <p>Please update or remove the affected item before continuing.</p>
+              </div>
+              )}
+
+
+              {checkoutStep === 'success' ? (
+                <section className="cart-result-screen">
+                  <div className="cart-result-icon cart-result-icon-success">
+                    ✓
+                  </div>
+
+                  <p className="cart-result-eyebrow">
+                    JOSH AMOR
+                  </p>
+
+                  <h2>Thank you for your order.</h2>
+
+                  <p className="cart-result-description">
+                    Your simulated payment was successful and your order
+                    has been recorded.
+                  </p>
+
+                  <div className="cart-result-order">
+                    <span>Order number</span>
+                    <strong>{pendingOrder?.orderNumber}</strong>
+                  </div>
+
+                  <p className="cart-result-note">
+                    This is a development payment simulation. No real payment
+                    has been collected.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="cart-result-primary"
+                    onClick={() => {
+                      setCartOpen(false)
+                      setCheckoutStep('details')
+                      setPendingOrder(null)
+                      setPaymentError('')
+                    }}
+                  >
+                    Continue shopping
+                  </button>
+                </section>
+
+              ) : checkoutStep === 'payment' && pendingOrder ? (
+
+                <section className="cart-payment-screen">
+                  <button
+                    type="button"
+                    className="cart-payment-back"
+                    onClick={() => {
+                      setCheckoutStep('details')
+                      setPaymentError('')
+                    }}
+                    disabled={paymentProcessing}
+                  >
+                    ← Back to checkout
+                  </button>
+
+                  <div className="cart-payment-heading">
+                    <p>ORDER REVIEW</p>
+                    <h2>Complete your order</h2>
+                    <span>
+                      Order {pendingOrder.orderNumber}
+                    </span>
+                  </div>
+
+                  <div className="cart-payment-summary">
+                    <div>
+                      <span>Subtotal</span>
+                      <span>{money(pendingOrder.subtotal)}</span>
+                    </div>
+
+                    <div>
+                      <span>Shipping</span>
+                      <span>{money(pendingOrder.shippingAmount)}</span>
+                    </div>
+
+                    <div className="cart-payment-total">
+                      <span>Total amount</span>
+                      <strong>{money(pendingOrder.totalAmount)}</strong>
+                    </div>
+                  </div>
+
+                  <div className="cart-payment-method">
+                    <h3>Payment</h3>
+
+                    <p>
+                      Complete your order securely using Flutterwave.
+                      You'll be redirected to the secure payment page.
+                    </p>
+
+                    <button
+                      type="button"
+                      className="flutterwave-pay-button"
+                      onClick={handleFlutterwavePayment}
+                      disabled={paymentProcessing}
+                    >
+                      <span>
+                        {paymentProcessing
+                          ? 'Connecting to Flutterwave...'
+                          : 'Proceed to secure payment'}
+                      </span>
+
+                      {!paymentProcessing && (
+                        <span className="flutterwave-pay-arrow" aria-hidden="true">
+                          →
+                        </span>
+                      )}
+
+                      {paymentProcessing && (
+                        <span className="flutterwave-spinner" aria-hidden="true" />
+                      )}
+                    </button>
+
+                    <div className="flutterwave-payment-note">
+                      <span className="flutterwave-secure-icon" aria-hidden="true">
+                        ✓
+                      </span>
+                      <span>Secure payment powered by Flutterwave</span>
+                    </div>
+
+                    {paymentError && (
+                      <p className="cart-payment-error" role="alert">
+                        {paymentError}
+                      </p>
+                    )}
+                    </div>
+
+                </section>
+
+              ) : items.length === 0 ? (
                 <div className="cart-empty">
                   <p>Your bag is currently empty.</p>
                   <button
@@ -193,6 +594,10 @@ export default function CartDrawer() {
 
                             <button
                               type="button"
+                              disabled={
+                                Number.isInteger(item.stock) &&
+                                item.quantity >= item.stock
+                              }
                               aria-label={`Increase quantity of ${item.name}`}
                               onClick={() =>
                                 updateQuantity(item.key, item.quantity + 1)
@@ -321,16 +726,24 @@ export default function CartDrawer() {
                             <option value="Germany">Germany</option>
                             <option value="Other">Other international destination</option>
                           </select>
-                        <input
-                          name="email"
-                          type="email"
-                          placeholder="Email"
-                          autoComplete="email"
-                          value={customer.email}
-                          onChange={updateCustomer}
-                          required
-                        />
-
+                          <input
+                            name="email"
+                            type="email"
+                            placeholder="Email (Enter a valid email address, order information will be sent there)"
+                            autoComplete="email"
+                            value={customer.email}
+                            onChange={(event) => {
+                              updateCustomer(event)
+                              setContactMessage('')
+                            }}
+                            onBlur={() => {
+                              saveCustomerContact(
+                                customer.email,
+                                abandonedEmailConsent
+                              )
+                            }}
+                            required
+                          />
                         <input
                           name="phone"
                           type="tel"
@@ -410,12 +823,68 @@ export default function CartDrawer() {
                         <input
                           type="checkbox"
                           checked={newsletter}
-                          onChange={(event) =>
+                          onChange={(event) => {
                             setNewsletter(event.target.checked)
-                          }
+                            setNewsletterMessage('')
+                          }}
                         />
-                        Subscribe to newsletter
+
+                        <span>
+                          Join the Inner Circle. I agree to receive emails about
+                          new collections, exclusive releases, private invitations
+                          and updates from Josh Amor.
+                          {' '}
+                          <Link to="/privacy-policy">
+                            Privacy Policy
+                          </Link>.
+                        </span>
                       </label>
+
+                      {newsletterMessage && (
+                        <p
+                          className="checkout-message"
+                          role={newsletterStatus === 'error' ? 'alert' : 'status'}
+                        >
+                          {newsletterStatus === 'sending'
+                            ? 'Joining the Inner Circle...'
+                            : newsletterMessage}
+                        </p>
+                      )}
+
+                        <label className="checkout-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={abandonedEmailConsent}
+                            onChange={(event) => {
+                              const checked = event.target.checked
+
+                              setAbandonedEmailConsent(checked)
+
+                              saveCustomerContact(
+                                customer.email,
+                                checked
+                              )
+                            }}
+                          />
+
+                          <span>
+                            Send me reminders about items left in my cart.
+                            I understand that I may receive a reminder after
+                            one day and another after one week.
+                          </span>
+                        </label>
+
+                        {contactSaving && (
+                          <p className="checkout-message" role="status">
+                            Saving your contact information...
+                          </p>
+                        )}
+
+                        {contactMessage && (
+                          <p className="checkout-message" role="status">
+                            {contactMessage}
+                          </p>
+                        )}
 
                       <label className="checkout-checkbox">
                         <input
@@ -444,15 +913,27 @@ export default function CartDrawer() {
                       >
                         Continue to payment
                       </button>
-                      <p className="checkout-payment-note">
-                        Secure payment options will be available once
-                        payment integration is configured.
-                      </p>
-                    </section>
+
+                      </section>
+                      <div
+                        className="absolute -left-[9999px] h-px w-px overflow-hidden"
+                        aria-hidden="true"
+                      >
+                        <label>
+                          Leave this field empty
+                          <input
+                            name="website"
+                            type="text"
+                            tabIndex={-1}
+                            autoComplete="off"
+                          />
+                        </label>
+                      </div>
                   </form>
                 </>
               )}
             </div>
+
           </motion.aside>
         </>
       )}

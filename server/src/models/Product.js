@@ -1,19 +1,34 @@
 
 import mongoose from 'mongoose'
 
-const imageSchema = new mongoose.Schema(
-  {
-    url: {
-      type: String,
-      required: true,
-    },
-    alt: {
-      type: String,
-      default: '',
-    },
+
+const imageSchema = new mongoose.Schema({
+  url: {
+    type: String,
+    required: true,
   },
-  { _id: false }
-)
+  alt: {
+    type: String,
+    default: '',
+  },
+  publicId: {
+    type: String,
+    default: null,
+  },
+  width: {
+    type: Number,
+    default: null,
+  },
+  height: {
+    type: Number,
+    default: null,
+  },
+  format: {
+    type: String,
+    default: '',
+  },
+}, { _id: false })
+
 
 const colorSchema = new mongoose.Schema(
   {
@@ -30,28 +45,36 @@ const colorSchema = new mongoose.Schema(
   { _id: false }
 )
 
-const variantSchema = new mongoose.Schema(
-  {
-    sku: {
-      type: String,
-      trim: true,
-    },
-    color: {
-      type: String,
-      required: true,
-    },
-    size: {
-      type: String,
-      required: true,
-    },
-    stock: {
-      type: Number,
-      default: 0,
-      min: 0,
+
+const variantSchema = new mongoose.Schema({
+  sku: {
+    type: String,
+    required: true,
+    trim: true,
+    uppercase: true,
+  },
+  color: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  size: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  stock: {
+    type: Number,
+    default: 0,
+    min: 0,
+    validate: {
+      validator: Number.isInteger,
+      message: 'Stock must be a whole number.',
     },
   },
-  { _id: true }
-)
+}, { _id: true })
+
+
 
 const productSchema = new mongoose.Schema(
   {
@@ -71,7 +94,9 @@ const productSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: true,
+      required: function () {
+        return this.status === 'published'
+      },
     },
     legacyId: {
       type: String,
@@ -87,8 +112,10 @@ const productSchema = new mongoose.Schema(
 
     price: {
       type: Number,
-      required: true,
       min: 0,
+      required: function () {
+        return this.status === 'published'
+      },
     },
 
     currency: {
@@ -99,7 +126,9 @@ const productSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-      required: true,
+      required: function () {
+        return this.status === 'published'
+      },
     },
 
     images: [imageSchema],
@@ -157,6 +186,11 @@ const productSchema = new mongoose.Schema(
 
     publishedAt: {
       type: Date,
+      default: null,
+    },
+    lowStockThreshold: {
+      type: Number,
+      min: 0,
       default: null,
     },
 

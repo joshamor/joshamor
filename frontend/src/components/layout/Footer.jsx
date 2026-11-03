@@ -14,8 +14,8 @@ const footerGroups = [
       ['Enquiries', '/enquiry'],
       ['Our Story', '/our-story'],
       ['Bespoke', '/bespoke'],
-      ['Careers', '/career'],
-      ['Sustainability', '/sustainability'],
+      // ['Careers', '/career'],
+      // ['Sustainability', '/sustainability'],
     ],
   },
   {

@@ -4,7 +4,11 @@ import { Link, useParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react'
 import ProductCard from '../components/products/ProductCard'
 import { useCart } from '../context/CartContext'
-import { getProductBySlug } from '../services/api'
+import {
+  getProductBySlug,
+  getAvailableSizes,
+  getVariant,
+} from '../services/api'
 import './product-detail.css'
 import { Helmet } from 'react-helmet-async'
 import SEO from '../components/SEO'
@@ -336,10 +340,18 @@ export default function ProductDetail() {
   const selectedColor = product.colors[colorIndex]
   const images = selectedColor?.images || []
 
+  // Only sizes with positive stock for the selected colour are available.
+  const availableSizes = getAvailableSizes(product, selectedColor?.name)
+
+  const selectedVariant = getVariant(
+    product,
+    selectedColor?.name,
+    selectedSize
+  )
+
   const canAddToCart =
-    Boolean(selectedColor) &&
-    Boolean(selectedSize) &&
-    product.availableSizes.includes(selectedSize)
+    Boolean(selectedVariant) &&
+    selectedVariant.stock > 0
 
   function changeImage(direction) {
     if (!images.length) return
@@ -350,12 +362,23 @@ export default function ProductDetail() {
   }
 
   function handleAddToCart() {
-    if (!canAddToCart) return
+    const variant = getVariant(
+      product,
+      selectedColor?.name,
+      selectedSize
+    )
+
+    if (!variant || variant.stock <= 0) {
+      setCartMessage('Sorry, this size is currently out of stock.')
+      return
+    }
 
     addItem(product, {
+      variantId: variant.id || variant._id,
       color: selectedColor.name,
       size: selectedSize,
       image: images[imageIndex],
+      stock: variant.stock,
     })
 
     setCartMessage(`${product.name} added to your bag.`)
@@ -515,6 +538,7 @@ export default function ProductDetail() {
                     onClick={() => {
                       setColorIndex(index)
                       setImageIndex(0)
+                      setSelectedSize('')
                       setCartMessage('')
                     }}
                     aria-label={`Choose ${color.name}`}
@@ -531,11 +555,11 @@ export default function ProductDetail() {
               )}
             </section>
 
+
             <section className="product-size-section">
               <div className="product-size-options">
                 {product.sizes.map((size) => {
-                  const available =
-                    product.availableSizes.includes(size)
+                  const available = availableSizes.includes(size)
 
                   return (
                     <button
@@ -551,6 +575,7 @@ export default function ProductDetail() {
                         setCartMessage('')
                       }}
                       aria-pressed={selectedSize === size}
+                      aria-label={`${size}${available ? '' : ', out of stock'}`}
                     >
                       {size}
                     </button>
@@ -558,12 +583,19 @@ export default function ProductDetail() {
                 })}
               </div>
 
-              {selectedSize && !canAddToCart && (
-                <p className="product-stock-message">
+              {!availableSizes.length && (
+                <p className="product-stock-message" role="status">
+                  This colour is currently out of stock.
+                </p>
+              )}
+
+              {selectedSize && !canAddToCart && availableSizes.length > 0 && (
+                <p className="product-stock-message" role="status">
                   This size is currently unavailable.
                 </p>
               )}
             </section>
+
 
             <button
               type="button"

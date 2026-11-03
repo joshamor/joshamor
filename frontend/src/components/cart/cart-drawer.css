@@ -321,3 +321,369 @@
   font-size: 12px;
   line-height: 1.6;
 }
+
+
+.cart-sync-message,
+.cart-sync-error {
+  margin: 16px;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.cart-sync-message {
+  background: #f5f5f5;
+  color: #555;
+}
+
+.cart-sync-error {
+  background: #fff4f2;
+  border: 1px solid #f0d0ca;
+  color: #a33c2d;
+}
+
+.cart-sync-error p + p {
+  margin-top: 6px;
+}
+
+
+/* Payment and order result screens */
+
+.cart-payment-screen,
+.cart-result-screen {
+  padding: 28px 24px 40px;
+}
+
+.cart-payment-back {
+  display: inline-block;
+  margin-bottom: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #737373;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.cart-payment-heading {
+  margin-bottom: 28px;
+}
+
+.cart-payment-heading > p,
+.cart-result-eyebrow {
+  margin-bottom: 12px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.cart-payment-heading h2,
+.cart-result-screen h2 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.cart-payment-heading > span {
+  display: block;
+  margin-top: 10px;
+  color: #888;
+  font-size: 11px;
+}
+
+.cart-payment-summary {
+  padding: 20px 0;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.cart-payment-summary > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.cart-payment-summary > div:last-child {
+  margin-bottom: 0;
+}
+
+.cart-payment-total {
+  padding-top: 17px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.cart-payment-total strong {
+  font-size: 16px;
+}
+
+.cart-payment-method {
+  margin-top: 32px;
+}
+
+.cart-payment-method h3 {
+  margin-bottom: 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cart-payment-method > p {
+  color: #737373;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.cart-simulation-panel {
+  margin-top: 24px;
+  padding: 18px;
+  background: #f5f4f1;
+}
+
+.cart-simulation-label {
+  margin-bottom: 16px;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: #777;
+}
+
+.cart-simulation-success,
+.cart-simulation-failure {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 10px;
+  padding: 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.cart-simulation-success {
+  border: 1px solid #171717;
+  background: #171717;
+  color: #fff;
+}
+
+.cart-simulation-failure {
+  border: 1px solid #d4d4d4;
+  background: #fff;
+  color: #555;
+}
+
+.cart-simulation-success:disabled,
+.cart-simulation-failure:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.cart-simulation-note {
+  margin-top: 10px;
+  color: #888;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.cart-payment-error {
+  margin-top: 18px;
+  padding: 13px;
+  background: #fff4f2;
+  color: #a33c2d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.cart-payment-unavailable {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f5f4f1;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Order success */
+
+.cart-result-screen {
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.cart-result-icon {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  border-radius: 50%;
+  font-size: 23px;
+}
+
+.cart-result-icon-success {
+  background: #edf5ee;
+  color: #337347;
+}
+
+.cart-result-screen h2 {
+  max-width: 320px;
+}
+
+.cart-result-description {
+  max-width: 310px;
+  margin-top: 15px;
+  color: #737373;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.cart-result-order {
+  width: 100%;
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+}
+
+.cart-result-order span {
+  display: block;
+  margin-bottom: 10px;
+  color: #888;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.cart-result-order strong {
+  font-size: 15px;
+  letter-spacing: 0.05em;
+}
+
+.cart-result-note {
+  max-width: 320px;
+  margin-top: 18px;
+  color: #888;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.cart-result-primary {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 28px;
+  background: #171717;
+  color: #fff;
+  border: 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+/* Flutterwave payment button */
+
+.flutterwave-pay-button {
+  width: 100%;
+  min-height: 58px;
+  padding: 0 22px;
+  margin-top: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  background: #111;
+  color: #fff;
+  border: 1px solid #111;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.flutterwave-pay-button:hover:not(:disabled) {
+  background: #333;
+  border-color: #333;
+}
+
+.flutterwave-pay-button:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}
+
+.flutterwave-pay-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.flutterwave-pay-arrow {
+  font-size: 20px;
+  font-weight: 300;
+  transition: transform 0.25s ease;
+}
+
+.flutterwave-pay-button:hover:not(:disabled)
+.flutterwave-pay-arrow {
+  transform: translateX(4px);
+}
+
+/* Secure payment reassurance */
+
+.flutterwave-payment-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 14px;
+
+  color: #777;
+  font-size: 11px;
+  letter-spacing: 0.025em;
+}
+
+.flutterwave-secure-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 15px;
+  height: 15px;
+
+  border: 1px solid #aaa;
+  border-radius: 50%;
+
+  font-size: 9px;
+}
+
+/* Loading spinner */
+
+.flutterwave-spinner {
+  width: 17px;
+  height: 17px;
+
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+
+  animation: flutterwave-spin 0.7s linear infinite;
+}
+
+@keyframes flutterwave-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
