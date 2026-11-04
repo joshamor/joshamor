@@ -2,7 +2,12 @@
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
-  'http://127.0.0.1:8080'
+  "https://www.joshamor.com",
+  "http://www.joshamor.com",
+  "https://joshamor.netlify.app",
+  "http://joshamor.netlify.app",
+  "https://joshamor.netlify.app/",
+  "http://joshamor.netlify.app/"
 ].filter(Boolean)
 
 export function requireAdminOrigin(req, res, next) {
