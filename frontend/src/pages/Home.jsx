@@ -21,15 +21,15 @@ const editorialImages = [
 
 ]
 
-const editorialClosingImages = [
-  'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1000&q=85',
-  'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=1000&q=85',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85',
-  'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1000&q=85',
+
+const singleEditorialImage =
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794349290/gold-2caption.png'
+
+const doubleEditorialImages = [
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347113/IMG_0904.JPG.jpg',
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347112/IMG_0906.JPG.jpg',
 ]
 
-const campaignStill =
-  'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=85'
 
 const railArrowClass =
   'absolute top-1/2 z-10 flex h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-white/90 text-[#111] transition-colors duration-200 hover:bg-white motion-reduce:transition-none max-md:h-[26px] max-md:w-[26px]'
@@ -100,81 +100,6 @@ function ImageRail({ images, label }) {
 }
 
 
-
-function ProductRail({ items, title }) {
-  const railRef = useRef(null)
-
-  function move(direction) {
-    const rail = railRef.current
-    if (!rail) return
-
-    rail.scrollBy({
-      left: direction * rail.clientWidth * 0.75,
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth',
-    })
-  }
-
-  if (!items.length) return null
-
-  return (
-    <section className="m-0 w-full min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]">
-      {/* Section heading */}
-      <div className="flex items-center justify-between px-[10px] py-3 max-md:px-2">
-        <h2 className="m-0 font-['Boogy_Brut_WEBL',Georgia,serif] text-base font-normal uppercase">
-          {title}
-        </h2>
-
-        <Link
-          to="/shop/jackets-and-coats"
-          className="border-b border-current pb-[3px] text-[10px] uppercase text-inherit no-underline"
-        >
-          View all
-        </Link>
-      </div>
-
-      {/* Product carousel */}
-      <div className="relative">
-        <div
-          ref={railRef}
-          className="flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden max-md:gap-[3px]"
-        >
-          {items.map((product) => (
-            <div
-              key={product.id}
-              className="min-w-0 flex-[0_0_calc(25%_-_3px)] snap-start max-md:flex-[0_0_38%] max-[420px]:flex-[0_0_43%]"
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-
-        {/* Previous products */}
-        <button
-          className="absolute left-[10px] top-1/2 z-10 flex h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-white/90 text-[#111] transition-colors hover:bg-white motion-reduce:transition-none max-md:left-[6px] max-md:h-[26px] max-md:w-[26px]"
-          type="button"
-          aria-label="Previous products"
-          onClick={() => move(-1)}
-        >
-          <ChevronLeft size={17} strokeWidth={1.4} />
-        </button>
-
-        {/* Next products */}
-        <button
-          className="absolute right-[10px] top-1/2 z-10 flex h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-white/90 text-[#111] transition-colors hover:bg-white motion-reduce:transition-none max-md:right-[6px] max-md:h-[26px] max-md:w-[26px]"
-          type="button"
-          aria-label="Next products"
-          onClick={() => move(1)}
-        >
-          <ChevronRight size={17} strokeWidth={1.4} />
-        </button>
-      </div>
-    </section>
-  )
-}
-
-
 function AutoplayVideo({ src, poster, className }) {
   const videoRef = useRef(null)
 
@@ -226,11 +151,7 @@ function AutoplayVideo({ src, poster, className }) {
 }
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 2)
 
-  const jacketProducts = products.filter((product) =>
-    product.category?.toLowerCase().includes('jacket')
-  )
 
   return (
     <>
@@ -307,7 +228,7 @@ export default function Home() {
             aria-label="Explore the lookbook"
           >
             <img
-              src={campaignStill}
+              src="https://res.cloudinary.com/eynk4fvb/image/upload/v1794347129/IMG_8174_3.JPG.jpg"
               alt=""
               loading="lazy"
               className="block h-full w-full object-cover"
@@ -315,14 +236,34 @@ export default function Home() {
           </Link>
         </section>
 
-        {/* 5. Product carousel */}
-        <ProductRail items={jacketProducts} title="Jackets & Coats" />
+        {/* 5. Single editorial image */}
+        <section className="mb-3 w-full min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]">
+          <div className="aspect-[1.2/1] w-full overflow-hidden bg-[#eee] max-md:aspect-[0.85/1]">
+            <img
+              src={singleEditorialImage}
+              alt="JOSH AMOR editorial campaign"
+              loading="lazy"
+              className="block  w-full object-cover"
+            />
+          </div>
+        </section>
 
-        {/* 6. Final editorial image carousel */}
-        <ImageRail
-          images={editorialClosingImages}
-          label="More campaign imagery"
-        />
+        {/* 6. Two-column editorial images */}
+        <section className="mb-3 grid w-full grid-cols-2 gap-1 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px] max-[480px]:gap-[3px]">
+          {doubleEditorialImages.map((image, index) => (
+            <div
+              key={image}
+              className="aspect-[0.82/1] min-w-0 overflow-hidden bg-[#eee] max-md:aspect-[0.68/1]"
+            >
+              <img
+                src={image}
+                alt={`JOSH AMOR editorial campaign ${index + 1}`}
+                loading="lazy"
+                className="block h-full w-full object-cover"
+              />
+            </div>
+          ))}
+        </section>
       </main>
     </>
   )
