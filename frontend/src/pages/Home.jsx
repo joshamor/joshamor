@@ -7,10 +7,18 @@ import ProductCard from '../components/products/ProductCard'
 import SEO from '../components/SEO'
 
 const editorialImages = [
-  'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1000&q=85',
-  'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85',
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347117/grey_stripe_1.JPG.jpg',
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347120/lime_green_3.jpg',
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347108/black_1.jpg',
+  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347112/green_4.jpg',
+  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347104/9074EB23-FFEB-4298-AA7F-75EA2A9A2460.JPG.jpg",
+  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347120/lime_green_3.jpg",
+  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347122/white_1_2.jpg",
+  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347126/blue_1_2.jpg",
+  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347128/red_1.jpg",
+  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347129/IMG_7770.JPG.jpg"
+
+
 ]
 
 const editorialClosingImages = [
@@ -28,6 +36,7 @@ const railArrowClass =
 
 const railTrackClass =
   'flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden motion-reduce:scroll-auto max-md:gap-[3px]'
+
 
 function ImageRail({ images, label }) {
   const railRef = useRef(null)
@@ -49,26 +58,24 @@ function ImageRail({ images, label }) {
       className="relative w-full mb-3 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]"
       aria-label={label}
     >
-      <div className={railTrackClass} ref={railRef}>
-        {images.map((image, index) => {
-          const product = products[index % Math.max(products.length, 1)]
-
-          return (
-            <Link
-              key={`${label}-${index}`}
-              to={product ? `/products/${product.slug}` : '/shop'}
-              className="block aspect-[0.72/1] min-w-0 flex-[0_0_calc(25%-3px)] snap-start overflow-hidden bg-[#eee] max-md:flex-[0_0_38%] max-[420px]:flex-[0_0_43%]"
-              aria-label={`Explore ${product?.name || 'the collection'}`}
-            >
-              <img
-                src={image}
-                alt=""
-                loading="lazy"
-                className="block h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] hover:scale-[1.025] motion-reduce:transition-none"
-              />
-            </Link>
-          )
-        })}
+      <div
+        className={railTrackClass}
+        ref={railRef}
+      >
+        {images.map((image, index) => (
+          <div
+            key={`${label}-${index}`}
+            className="block aspect-[0.72/1] min-w-0 flex-[0_0_calc(25%-3px)] snap-start overflow-hidden bg-[#eee] max-md:flex-[0_0_38%] max-[420px]:flex-[0_0_43%]"
+          >
+            <img
+              src={image}
+              alt={`${label} image ${index + 1}`}
+              loading="lazy"
+              draggable="false"
+              className="block h-full w-full select-none object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] motion-reduce:transition-none"
+            />
+          </div>
+        ))}
       </div>
 
       <button
@@ -91,6 +98,7 @@ function ImageRail({ images, label }) {
     </section>
   )
 }
+
 
 
 function ProductRail({ items, title }) {
@@ -239,14 +247,14 @@ export default function Home() {
             aria-label="Discover the latest collection"
           >
             <AutoplayVideo
-              src="/videos/home-hero.mp4"
+              src="https://res.cloudinary.com/eynk4fvb/video/upload/v1794347074/IMG_4665.mp4"
               className="block h-full w-full object-cover object-[center_35%]"
             />
           </div>
         </section>
 
         {/* 2. Two editorial feature images */}
-        <section className="grid grid-cols-2 mb-3 gap-0">
+        {/* <section className="grid grid-cols-2 mb-3 gap-0">
           {featuredProducts.map((product, index) => {
             const image = product.colors?.[0]?.images?.[0]
 
@@ -273,7 +281,7 @@ export default function Home() {
               </Link>
             )
           })}
-        </section>
+        </section>*/}
 
         {/* 3. Editorial image carousel */}
         <ImageRail
@@ -288,8 +296,8 @@ export default function Home() {
             aria-label="Explore the campaign library"
           >
             <AutoplayVideo
-              src="/videos/campaign-placeholder.mp4"
-              className="block h-full w-full object-cover object-center"
+              src="https://res.cloudinary.com/eynk4fvb/video/upload/v1794347117/Look_5_Dance_Video.mov"
+              className="block  w-full object-cover object-center"
             />
           </div>
 
