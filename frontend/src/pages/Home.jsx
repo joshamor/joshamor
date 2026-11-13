@@ -1,44 +1,111 @@
 
-import { useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import products from '../data/products'
+import { getProducts } from '../services/api'
 import ProductCard from '../components/products/ProductCard'
 import SEO from '../components/SEO'
 
-const editorialImages = [
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347117/grey_stripe_1.JPG.jpg',
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347120/lime_green_3.jpg',
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347108/black_1.jpg',
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347112/green_4.jpg',
-  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347104/9074EB23-FFEB-4298-AA7F-75EA2A9A2460.JPG.jpg",
-  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347120/lime_green_3.jpg",
-  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347122/white_1_2.jpg",
-  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347126/blue_1_2.jpg",
-  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347128/red_1.jpg",
-  "https://res.cloudinary.com/eynk4fvb/image/upload/v1794347129/IMG_7770.JPG.jpg"
+// --------------------------------------------------
+// EDITORIAL CONTENT
+// --------------------------------------------------
 
-
+const heroImages = [
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://a.storyblok.com/f/267343/5504x7339/44822f379b/arl_0970.jpg?speedsize=mxw_1080',
+    alt: 'JOSH AMOR campaign look',
+    title: '',
+  },
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://a.storyblok.com/f/267343/1620x2025/4accefff1a/33.jpg?speedsize=mxw_384',
+    alt: 'JOSH AMOR editorial campaign',
+    title: '',
+  },
 ]
 
-
-const singleEditorialImage =
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794349290/gold-2caption.png'
-
-const doubleEditorialImages = [
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347113/IMG_0904.JPG.jpg',
-  'https://res.cloudinary.com/eynk4fvb/image/upload/v1794347112/IMG_0906.JPG.jpg',
+const firstCarouselImages = [
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/454_077b992726-ecom-fw-de2-pre-spring-26-20746-best.jpg?speedsize=mxw_1080',
+    alt: 'Black tailored look',
+    to: '/lookbook',
+  },
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/473_c60185089e-ecom-fw-de2-pre-spring-26-20837-best.jpg?speedsize=mxw_1080',
+    alt: 'Green editorial look',
+    to: '/lookbook',
+  },
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/480_6748220480-ecom-fw26-1-17367-best.jpg?speedsize=mxw_1080',
+    alt: 'JOSH AMOR collection',
+    to: '/shop',
+  },
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/453_58b384ea56-ecom-fw26-1-17419-best.jpg?speedsize=mxw_1080',
+    alt: 'White collection look',
+    to: '/shop',
+  },
 ]
 
+const closingCarouselImages = [
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/477_2497d3a9c2-ecom-fw26-1-17472-best.jpg?speedsize=mxw_1080',
+    alt: 'Blue collection look',
+    to: '/shop',
+  },
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/458_6603cc6f7e-fw26-lookbook-15448-best.jpg?speedsize=mxw_1080',
+    alt: 'Red collection look',
+    to: '/shop',
+  },
+  {
+    src: 'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://arakii.centracdn.net/client/dynamic/images/458_33e2bd9569-ecom-fw26-1-17893-best.jpg?speedsize=mxw_1080',
+    alt: 'JOSH AMOR campaign',
+    to: '/lookbook',
+  },
+]
 
-const railArrowClass =
-  'absolute top-1/2 z-10 flex h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-white/90 text-[#111] transition-colors duration-200 hover:bg-white motion-reduce:transition-none max-md:h-[26px] max-md:w-[26px]'
+const editorialStill =
+  'https://ecdn.speedsize.com/ae1dbfff-6186-4bf9-a84a-f4da84ea401b/https://a.storyblok.com/f/267343/3596x4795/fe64f20ef4/sculpture.jpg?speedsize=mxw_1080'
 
-const railTrackClass =
-  'flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden motion-reduce:scroll-auto max-md:gap-[3px]'
+const videoOne =
+  'https://res.cloudinary.com/eynk4fvb/video/upload/v1794347074/IMG_4665.mp4'
 
+const videoTwo =
+  'https://res.cloudinary.com/eynk4fvb/video/upload/v1794347117/Look_5_Dance_Video.mov'
 
-function ImageRail({ images, label }) {
+// --------------------------------------------------
+// SHARED CAROUSEL ARROWS
+// --------------------------------------------------
+
+function CarouselArrows({ onPrevious, onNext, label }) {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={onPrevious}
+        aria-label={`Previous ${label}`}
+        className="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-white/90 text-black shadow-sm transition-colors hover:bg-white motion-reduce:transition-none max-md:h-7 max-md:w-7"
+      >
+        <ChevronLeft size={17} strokeWidth={1.4} />
+      </button>
+
+      <button
+        type="button"
+        onClick={onNext}
+        aria-label={`Next ${label}`}
+        className="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-white/90 text-black shadow-sm transition-colors hover:bg-white motion-reduce:transition-none max-md:h-7 max-md:w-7"
+      >
+        <ChevronRight size={17} strokeWidth={1.4} />
+      </button>
+    </>
+  )
+}
+
+// --------------------------------------------------
+// LINKED IMAGE CAROUSEL
+// --------------------------------------------------
+
+function ImageCarousel({ images, label }) {
   const railRef = useRef(null)
 
   function move(direction) {
@@ -55,52 +122,57 @@ function ImageRail({ images, label }) {
 
   return (
     <section
-      className="relative w-full mb-3 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]"
+      className="relative mb-3 w-full overflow-hidden 2xl:mb-5"
       aria-label={label}
     >
       <div
-        className={railTrackClass}
         ref={railRef}
+        className="flex gap-[3px] overflow-x-auto overscroll-x-contain snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {images.map((image, index) => (
-          <div
+        {images.map((item, index) => (
+          <Link
             key={`${label}-${index}`}
-            className="block aspect-[0.72/1] min-w-0 flex-[0_0_calc(25%-3px)] snap-start overflow-hidden bg-[#eee] max-md:flex-[0_0_38%] max-[420px]:flex-[0_0_43%]"
+            to={item.to}
+            className="
+              relative block aspect-[0.72/1] min-w-0
+              flex-[0_0_82%] snap-start overflow-hidden bg-[#eee]
+              sm:flex-[0_0_55%]
+              md:flex-[0_0_31%]
+              lg:flex-[0_0_26%]
+              xl:flex-[0_0_25%]
+              2xl:flex-[0_0_24.5%]
+            "
           >
             <img
-              src={image}
-              alt={`${label} image ${index + 1}`}
+              src={item.src}
+              alt={item.alt}
               loading="lazy"
               draggable="false"
-              className="block h-full w-full select-none object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] motion-reduce:transition-none"
+              className="h-full w-full select-none object-cover"
             />
-          </div>
+          </Link>
         ))}
       </div>
 
-      <button
-        className={`${railArrowClass} left-[10px] max-md:left-[6px]`}
-        type="button"
-        aria-label="Previous images"
-        onClick={() => move(-1)}
-      >
-        <ChevronLeft size={17} strokeWidth={1.4} />
-      </button>
-
-      <button
-        className={`${railArrowClass} right-[10px] max-md:right-[6px]`}
-        type="button"
-        aria-label="Next images"
-        onClick={() => move(1)}
-      >
-        <ChevronRight size={17} strokeWidth={1.4} />
-      </button>
+      <CarouselArrows
+        label={label}
+        onPrevious={() => move(-1)}
+        onNext={() => move(1)}
+      />
     </section>
   )
 }
 
+// --------------------------------------------------
+// AUTOPLAY CAMPAIGN VIDEO
+// --------------------------------------------------
 
-function AutoplayVideo({ src, poster, className }) {
+function CampaignVideo({
+  src,
+  poster,
+  sectionClassName = '',
+  mediaClassName = '',
+}) {
   const videoRef = useRef(null)
 
   useEffect(() => {
@@ -108,51 +180,180 @@ function AutoplayVideo({ src, poster, className }) {
 
     if (!video) return
 
-    // Explicitly configure the video for mobile autoplay
     video.muted = true
     video.defaultMuted = true
     video.playsInline = true
 
-    const attemptPlay = async () => {
+    const playVideo = async () => {
       try {
         await video.play()
-      } catch (error) {
-        console.warn('Video autoplay was blocked:', error)
+      } catch {
+        // Poster remains visible if autoplay is blocked.
       }
     }
 
-    // Attempt playback once the video is ready
     if (video.readyState >= 2) {
-      attemptPlay()
+      playVideo()
     } else {
-      video.addEventListener('canplay', attemptPlay, { once: true })
+      video.addEventListener('canplay', playVideo, { once: true })
     }
 
     return () => {
-      video.removeEventListener('canplay', attemptPlay)
+      video.removeEventListener('canplay', playVideo)
+      video.pause()
     }
   }, [src])
 
   return (
-    <video
-      ref={videoRef}
-      autoPlay
-      muted
-      defaultMuted
-      loop
-      playsInline
-      preload="metadata"
-      poster={poster}
-      className={className}
+    <section
+      className={`mb-3 w-full overflow-hidden bg-[#eee] ${sectionClassName}`}
     >
-      <source src={src} type="video/mp4" />
-    </video>
+      <div
+        className={`relative aspect-[0.85/1] w-full ${mediaClassName}`}
+      >
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          defaultMuted
+          loop
+          playsInline
+          preload="metadata"
+          poster={poster}
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src={src} />
+        </video>
+      </div>
+    </section>
   )
 }
 
+
+// --------------------------------------------------
+// PRODUCT CAROUSEL
+// Fetches products from your existing backend.
+// --------------------------------------------------
+
+function ProductCarousel() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const railRef = useRef(null)
+
+  useEffect(() => {
+    let active = true
+
+    async function loadProducts() {
+      try {
+        setLoading(true)
+        setError(false)
+
+        const result = await getProducts()
+
+        if (active) {
+          setProducts(result.data || [])
+        }
+      } catch (err) {
+        console.error('Unable to load homepage products:', err)
+
+        if (active) {
+          setError(true)
+        }
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadProducts()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  function move(direction) {
+    const rail = railRef.current
+
+    if (!rail) return
+
+    rail.scrollBy({
+      left: direction * rail.clientWidth * 0.75,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    })
+  }
+
+  return (
+    <section className="relative mb-8 w-full overflow-hidden">
+      {/* Product section heading */}
+
+
+      {/* Loading */}
+      {loading && (
+        <div className="px-3 py-12 text-center text-xs uppercase tracking-wider">
+          Loading collection...
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="px-3 py-12 text-center text-xs">
+          Unable to load products. Please try again later.
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && !error && products.length === 0 && (
+        <div className="px-3 py-12 text-center text-xs">
+          No products available at the moment.
+        </div>
+      )}
+
+      {/* Products */}
+      {!loading && !error && products.length > 0 && (
+        <div className="relative">
+          <div
+            ref={railRef}
+            className="flex gap-[3px] overflow-x-auto overscroll-x-contain snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {products.map((product) => (
+              <div
+                key={product._id || product.id}
+                className="
+                  min-w-0 flex-[0_0_48%] snap-start
+                  sm:flex-[0_0_32%]
+                  md:flex-[0_0_32%]
+                  lg:flex-[0_0_26%]
+                  xl:flex-[0_0_25%]
+                  2xl:flex-[0_0_24.5%]
+                "
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+
+          <CarouselArrows
+            label="products"
+            onPrevious={() => move(-1)}
+            onNext={() => move(1)}
+          />
+        </div>
+      )}
+    </section>
+  )
+}
+
+// --------------------------------------------------
+// HOMEPAGE
+// --------------------------------------------------
+
 export default function Home() {
-
-
   return (
     <>
       <SEO
@@ -160,110 +361,120 @@ export default function Home() {
         description="Discover contemporary wardrobe essentials, considered collections and bespoke tailoring from JOSH AMOR."
       />
 
-      <main className="m-0 w-full overflow-hidden bg-white text-[#171717] [&_a]:text-inherit [&_a]:no-underline">
-        {/* 1. Portrait campaign video */}
-        <section className="mb-3 flex justify-center p-0">
-          <div
-            className="block aspect-[1.34/1] w-[76%] max-w-[1440px] overflow-hidden bg-[#e8e8e8] max-md:aspect-[0.82/1] max-md:w-full max-md:max-w-none"
-            aria-label="Discover the latest collection"
-          >
-            <AutoplayVideo
-              src="https://res.cloudinary.com/eynk4fvb/video/upload/v1794347074/IMG_4665.mp4"
-              className="block h-full w-full object-cover object-[center_35%]"
-            />
-          </div>
-        </section>
+      <main className="
+        m-0 w-full overflow-hidden bg-white text-[#171717]
+        [&_a]:text-inherit [&_a]:no-underline
+        2xl:mx-auto
+      ">
+        {/* ------------------------------------------
+            1. HERO IMAGES
+            Mobile: stacked
+            Tablet/Desktop: two columns
+        ------------------------------------------ */}
 
-        {/* 2. Two editorial feature images */}
-        {/* <section className="grid grid-cols-2 mb-3 gap-0">
-          {featuredProducts.map((product, index) => {
-            const image = product.colors?.[0]?.images?.[0]
-
-            return (
-              <Link
-                key={product.id}
-                to={`/products/${product.slug}`}
-                className="group relative block aspect-[0.96/1] overflow-hidden bg-[#eee] max-md:aspect-[0.72/1]"
-              >
-                {image && (
-                  <img
-                    src={image}
-                    alt={product.name}
-                    loading="lazy"
-                    className="block h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.025] motion-reduce:transition-none"
-                  />
-                )}
-
-                {index === 1 && (
-                  <span className="absolute inset-0 flex items-center justify-center font-['Boogy_Brut_WEBL',Georgia,serif] text-[clamp(32px,5vw,78px)] tracking-[0.035em] text-white [text-shadow:0_1px_12px_rgb(0_0_0_/_10%)] max-md:text-[clamp(25px,7vw,48px)]">
-                    JOSH AMOR
-                  </span>
-                )}
-              </Link>
-            )
-          })}
-        </section>*/}
-
-        {/* 3. Editorial image carousel */}
-        <ImageRail
-          images={editorialImages}
-          label="Featured campaign imagery"
-        />
-
-        {/* 4. Campaign video and still image */}
-        <section className="grid grid-cols-2 gap-0 mb-3 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]">
-          <div
-            className="block aspect-[0.88/1] min-w-0 overflow-hidden bg-[#eee] max-md:aspect-[0.72/1]"
-            aria-label="Explore the campaign library"
-          >
-            <AutoplayVideo
-              src="https://res.cloudinary.com/eynk4fvb/video/upload/v1794347117/Look_5_Dance_Video.mov"
-              className="block  w-full object-cover object-center"
-            />
-          </div>
-
-          <Link
-            to="/lookbook"
-            className="block aspect-[0.88/1] min-w-0 overflow-hidden bg-[#eee] max-md:aspect-[0.72/1]"
-            aria-label="Explore the lookbook"
-          >
-            <img
-              src="https://res.cloudinary.com/eynk4fvb/image/upload/v1794347129/IMG_8174_3.JPG.jpg"
-              alt=""
-              loading="lazy"
-              className="block h-full w-full object-cover"
-            />
-          </Link>
-        </section>
-
-        {/* 5. Single editorial image */}
-        <section className="mb-3 w-full min-[1500px]:mx-auto min-[1500px]:max-w-[1920px]">
-          <div className="aspect-[1.2/1] w-full overflow-hidden bg-[#eee] max-md:aspect-[0.85/1]">
-            <img
-              src={singleEditorialImage}
-              alt="JOSH AMOR editorial campaign"
-              loading="lazy"
-              className="block  w-full object-cover"
-            />
-          </div>
-        </section>
-
-        {/* 6. Two-column editorial images */}
-        <section className="mb-3 grid w-full grid-cols-2 gap-1 min-[1500px]:mx-auto min-[1500px]:max-w-[1920px] max-[480px]:gap-[3px]">
-          {doubleEditorialImages.map((image, index) => (
+        <section className="mb-3 grid w-full grid-cols-1 gap-[3px] md:grid-cols-2">
+          {heroImages.map((image, index) => (
             <div
-              key={image}
-              className="aspect-[0.82/1] min-w-0 overflow-hidden bg-[#eee] max-md:aspect-[0.68/1]"
+              key={image.src}
+              className="
+                relative aspect-[0.72/1] w-full overflow-hidden bg-[#eee]
+                md:aspect-[0.82/1]
+                lg:aspect-[0.82/1]
+                2xl:aspect-[0.8/1]
+              "
             >
               <img
-                src={image}
-                alt={`JOSH AMOR editorial campaign ${index + 1}`}
-                loading="lazy"
-                className="block h-full w-full object-cover"
+                src={image.src}
+                alt={image.alt}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                className="h-full w-full object-cover"
               />
+
+              {image.title && (
+                <h1 className="absolute inset-0 flex items-center justify-center font-['Boogy_Brut_WEBL',Georgia,serif] text-[clamp(32px,5vw,76px)] tracking-wide text-white">
+                  {image.title}
+                </h1>
+              )}
             </div>
           ))}
         </section>
+
+        {/* ------------------------------------------
+            2. FIRST EDITORIAL CAROUSEL
+        ------------------------------------------ */}
+
+        <ImageCarousel
+          images={firstCarouselImages}
+          label="Featured editorial collection"
+        />
+
+        {/* ------------------------------------------
+            3. FIRST CAMPAIGN VIDEO
+            Mobile: full width
+            Tablet/Desktop: centered and narrower
+        ------------------------------------------ */}
+
+        <CampaignVideo
+          src={videoOne}
+          sectionClassName="
+            md:mx-auto md:w-[75%]
+            md:max-w-[1200px]
+            xl:w-[72%]
+            2xl:w-[75%]
+            2xl:max-w-[1500px]
+          "
+          mediaClassName="md:aspect-[4/3]"
+        />
+
+        {/* ------------------------------------------
+            4. SECOND VIDEO + EDITORIAL IMAGE
+            Mobile: stacked
+            Tablet/Desktop: two columns
+        ------------------------------------------ */}
+
+        <section className="
+          mb-3 grid w-full grid-cols-1 gap-[3px]
+          md:grid-cols-2
+          2xl:mx-auto 2xl:max-w-[2400px]
+        ">
+
+          {/* Second video */}
+          <CampaignVideo
+            src={videoTwo}
+            sectionClassName="mb-0"
+            mediaClassName="md:aspect-[0.82/1]"
+          />
+
+          {/* Editorial still */}
+          <div className="w-full overflow-hidden bg-[#eee]">
+            <div className="aspect-[0.85/1] w-full md:aspect-[0.82/1]">
+              <img
+                src={editorialStill}
+                alt="JOSH AMOR editorial campaign"
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+
+        </section>
+
+        {/* ------------------------------------------
+            5. BACKEND PRODUCTS CAROUSEL
+        ------------------------------------------ */}
+
+        <ProductCarousel />
+
+        {/* ------------------------------------------
+            6. FINAL EDITORIAL CAROUSEL
+        ------------------------------------------ */}
+
+        <ImageCarousel
+          images={closingCarouselImages}
+          label="More from JOSH AMOR"
+        />
+
       </main>
     </>
   )

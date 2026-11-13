@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -81,7 +80,7 @@ export default function ProductCard({ product }) {
             className={`product-card-sizes ${hovered ? 'is-visible' : ''}`}
           >
             {product.sizes
-              .filter((size) => product.availableSizes.includes(size))
+              ?.filter((size) => (product.availableSizes || product.sizes).includes(size))
               .map((size) => (
                 <span key={size}>{size}</span>
               ))}

@@ -121,7 +121,7 @@ export default function Header() {
         className="header-main"
         onMouseLeave={scheduleClose}
       >
-        <Link to="/" className="header-logo max-[900px]:!col-start-1 max-[900px]:!justify-self-start">
+        <Link to="/" className="header-logo max-[1024px]:!col-start-1 max-[1024px]:!justify-self-start">
          <img src={logo} className="h-3" />
         </Link>
 
@@ -197,8 +197,7 @@ export default function Header() {
         </nav>
 
 
-
-        <div className="header-actions max-[900px]:!col-start-3 max-[900px]:!justify-self-end">
+ <div className="header-actions max-[1024px]:!col-start-3 max-[1024px]:!justify-self-end">
           <button
             type="button"
             aria-label="Search products"

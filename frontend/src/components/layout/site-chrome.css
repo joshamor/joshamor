@@ -86,7 +86,7 @@
 /* Responsive header */
 
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .header-main {
     height: 70px;
     padding: 0 24px;
@@ -693,7 +693,7 @@
 
 /* RESPONSIVE BEHAVIOUR */
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .header-main {
     height: 70px;
     padding: 0 24px;
@@ -766,7 +766,7 @@
   color: #171717;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .site-header--overlay .header-main {
     background: transparent;
   }
@@ -775,7 +775,7 @@
 
 /* STICKY HEADER ON DESKTOP */
 
-@media (min-width: 901px) {
+@media (min-width: 1025px) {
   .site-header:not(.site-header--overlay) {
     position: sticky;
     top: 0;
@@ -851,7 +851,7 @@
   height: 257px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .mega-menu {
     display: none;
   }

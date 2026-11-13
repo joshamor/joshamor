@@ -48,6 +48,16 @@ function imageUrls(images = []) {
 export function adaptProduct(product) {
   if (!product) return null
 
+  // Map variants first so we can extract sizes from them
+  const variants = (product.variants || []).map(variant => ({
+    ...variant,
+    id: variant._id,
+    stock: Number(variant.stock) || 0,
+  }))
+
+  // Derive available sizes from variants that have stock > 0 (or all variant sizes)
+  const derivedSizes = [...new Set(variants.filter(v => v.stock > 0).map(v => v.size))]
+
   return {
     ...product,
 
@@ -67,19 +77,14 @@ export function adaptProduct(product) {
       images: imageUrls(color.images),
     })),
 
-    // Inventory is now supplied by MongoDB variants.
-    variants: (product.variants || []).map(variant => ({
-      ...variant,
-      id: variant._id,
-      stock: Number(variant.stock) || 0,
-    })),
+    variants,
 
     matchingProducts: (product.matchingProducts || [])
       .map(matchingProduct => adaptProduct(matchingProduct)),
 
-    // Keep legacy data, but don't use it to determine live stock.
-    availableSizes: product.availableSizes || [],
-    sizes: product.sizes || [],
+    // Use derived sizes as fallback if root sizes don't exist
+    availableSizes: product.availableSizes?.length ? product.availableSizes : derivedSizes,
+    sizes: product.sizes?.length ? product.sizes : derivedSizes,
 
     features: product.features || [],
     details: product.details || [],
@@ -90,8 +95,6 @@ export function adaptProduct(product) {
     },
   }
 }
-
-
 
 
 export function getAvailableSizes(product, colorName) {
